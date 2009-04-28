@@ -87,8 +87,6 @@
   <ItemGroup>
     <Content Include="aboutclock.png" />
     <Content Include="clock.ico" />
-    <None Include="Resources\%24this.Icon.ico" />
-    <None Include="Resources\notifyIcon1.Icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nohal.Redmine\Nohal.Redmine.csproj">
