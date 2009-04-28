@@ -283,9 +283,19 @@ namespace Nohal.Redmine.Client
                 DataGridViewIssues.AutoGenerateColumns = true;
                 DataGridViewIssues.DataSource = bnd;
                 DataGridViewIssues.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
-                DataGridViewIssues.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                if (DataGridViewIssues.Columns.Count > 0)
+                {
+                    DataGridViewIssues.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;    
+                }
+                
                 this.Cursor = Cursors.Default;
             }
         }
+
+        public static bool IsRunningOnMono()
+        {
+            return Type.GetType("Mono.Runtime") != null;
+        }
+
     }
 }

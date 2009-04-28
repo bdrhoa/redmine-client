@@ -170,7 +170,8 @@ namespace Nohal.Redmine.Client
             // notifyIcon1
             // 
             this.notifyIcon1.ContextMenuStrip = this.NotifyIconMenuStrip;
-            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
+            if (!IsRunningOnMono())
+                this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Text = "Redmine Client";
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
@@ -278,7 +279,8 @@ namespace Nohal.Redmine.Client
             this.Controls.Add(this.TextBoxMinutes);
             this.Controls.Add(this.TextBoxHours);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            if (!IsRunningOnMono())
+                this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "RedmineClientForm";
