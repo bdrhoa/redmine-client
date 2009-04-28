@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nohal.Redmine.Client", "Nohal.Redmine.Client\Nohal.Redmine.Client.csproj", "{07ABD877-B270-4054-B10E-7AA4DEBD37E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nohal.Redmine", "Nohal.Redmine\Nohal.Redmine.csproj", "{9285AA86-752D-4763-9483-03BBD8116772}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{07ABD877-B270-4054-B10E-7AA4DEBD37E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07ABD877-B270-4054-B10E-7AA4DEBD37E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07ABD877-B270-4054-B10E-7AA4DEBD37E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07ABD877-B270-4054-B10E-7AA4DEBD37E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9285AA86-752D-4763-9483-03BBD8116772}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9285AA86-752D-4763-9483-03BBD8116772}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9285AA86-752D-4763-9483-03BBD8116772}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9285AA86-752D-4763-9483-03BBD8116772}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
