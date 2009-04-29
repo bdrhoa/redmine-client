@@ -69,6 +69,16 @@ namespace Nohal.Redmine
         private Uri redmineBaseUri;
 
         /// <summary>
+        /// Username used to connect to the Redmine installation
+        /// </summary>
+        private string redmineUser;
+
+        /// <summary>
+        /// Password used to connect to the Redmine installation
+        /// </summary>
+        private string redminePassword;
+
+        /// <summary>
         /// Is the user already successfully authenticated?
         /// </summary>
         private bool authenticated = false;
@@ -79,7 +89,7 @@ namespace Nohal.Redmine
         private CookieContainer cookieJar;
 
         /// <summary>
-        /// Gets or setsthe base URI of the Redmine installation
+        /// Gets or sets the base URI of the Redmine installation
         /// </summary>
         public string RedmineBaseUri
         {
@@ -95,29 +105,78 @@ namespace Nohal.Redmine
         }
 
         /// <summary>
+        /// Gets or sets the Username used when connecting to Redmine
+        /// </summary>
+        public string RedmineUser
+        {
+            get
+            {
+                return this.redmineUser;
+            }
+
+            set
+            {
+                this.redmineUser = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the Password used when connecting to Redmine
+        /// </summary>
+        public string RedminePassword
+        {
+            get
+            {
+                return this.redminePassword;
+            }
+
+            set
+            {
+                this.redminePassword = value;
+            }
+        }
+
+        /// <summary>
+        /// Logs user into Redmine
+        /// </summary>
+        public void LogIn()
+        {
+            if (!string.IsNullOrEmpty(RedmineUser))
+            {
+                Uri uri = new Uri(this.redmineBaseUri, LoginRelativeUri);
+                string requestData = String.Format(LoginRequest,
+                                                   System.Web.HttpUtility.UrlEncode(
+                                                       new Uri(redmineBaseUri, ProjectListRelativeUri).ToString()),
+                                                   System.Web.HttpUtility.UrlEncode(this.RedmineUser),
+                                                   System.Web.HttpUtility.UrlEncode(this.RedminePassword));
+                string s = this.PostWebRequest(uri, requestData);
+                XmlDocument xml = new XmlDocument();
+                xml.LoadXml(s);
+
+                // if we get a feed with projects, we assume that we are successfully authenticated
+                // if we do get xhtml, it's the login form again
+                // this solution is quite ugly, but redmine doesn't provide much help in knowing what went wrong anyway...
+                if (xml.DocumentElement != null && xml.DocumentElement.Name == "feed")
+                {
+                    this.authenticated = true;
+                }
+                else
+                {
+                    throw new AuthenticationException("Authentication in Redmine failed.");
+                }
+            }
+        }
+
+        /// <summary>
         /// Logs user into Redmine
         /// </summary>
         /// <param name="username">Username in Redmine</param>
         /// <param name="password">Password in Redmine</param>
         public void LogIn(string username, string password)
         {
-            Uri uri = new Uri(this.redmineBaseUri, LoginRelativeUri);
-            string requestData = String.Format(LoginRequest, System.Web.HttpUtility.UrlEncode(new Uri(redmineBaseUri, ProjectListRelativeUri).ToString()), System.Web.HttpUtility.UrlEncode(username), System.Web.HttpUtility.UrlEncode(password));
-            string s = this.PostWebRequest(uri, requestData);
-            XmlDocument xml = new XmlDocument();
-            xml.LoadXml(s);
-
-            // if we get a feed with projects, we assume that we are successfully authenticated
-            // if we do get xhtml, it's the login form again
-            // this solution is quite ugly, but redmine doesn't provide much help in knowing what went wrong anyway...
-            if (xml.DocumentElement != null && xml.DocumentElement.Name == "feed")
-            {
-                this.authenticated = true;
-            }
-            else
-            {
-                throw new AuthenticationException("Authentication in Redmine failed."); 
-            }
+            this.RedmineUser = username;
+            this.RedminePassword = password;
+            this.LogIn();
         }
 
         /// <summary>
