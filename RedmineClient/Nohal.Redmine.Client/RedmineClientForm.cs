@@ -19,33 +19,77 @@ namespace Nohal.Redmine.Client
         private int issueId = 0;
         private int projectId = 0;
         private int activityId = 0;
-        private Redmine redmine;
+        private static Redmine redmine;
         private bool updating = false;
 
         private string RedmineURL;
+        private bool RedmineAuthentication;
         private string RedmineUser;
         private string RedminePassword;
 
         public RedmineClientForm()
         {
             InitializeComponent();
-            this.Cursor = Cursors.AppStarting;
+            if (!IsRunningOnMono())
+            {
+                this.Icon = (Icon)Properties.Resources.ResourceManager.GetObject("clock");
+                this.notifyIcon1.Icon = (Icon)Properties.Resources.ResourceManager.GetObject("clock");
+                this.notifyIcon1.Visible = true;
+            }
             redmine = new Redmine();
-            // TODO: takes some time, maybe we could move it to worker thread
             LoadConfig();
             redmine.RedmineBaseUri = RedmineURL;
-            redmine.LogIn(RedmineUser, RedminePassword);
+            if (RedmineAuthentication)
+            {
+                redmine.RedmineUser = RedmineUser;
+                redmine.RedminePassword = RedminePassword; 
+            }
+            this.Cursor = Cursors.AppStarting;
+            backgroundWorker1.RunWorkerAsync(0);
+        }
+
+        private FormData PrepareFormData(int projectId)
+        {
+            redmine.LogIn();
             List<Project> projects = redmine.GetProjects();
-            ComboBoxProject.DataSource = projects;
+            if (projects.Count > 0)
+            {
+                if (projectId == 0)
+                {
+                    projectId = projects[0].Id;
+                }
+                return new FormData() { Activities = redmine.GetActivities(projectId), Issues = redmine.GetIssues(projectId), Projects = projects };
+            }
+            throw new Exception("No projects found in Redmine.");
+        }
+
+        private void FillForm(FormData data)
+        {
+            updating = true;
+            ComboBoxProject.DataSource = data.Projects;
             ComboBoxProject.ValueMember = "Id";
             ComboBoxProject.DisplayMember = "Name";
-            this.Cursor = Cursors.Default;
-            ComboBoxProject_SelectedIndexChanged(this, new EventArgs());
+            
+            ComboBoxActivity.DataSource = data.Activities;
+            ComboBoxActivity.DisplayMember = "Description";
+            ComboBoxActivity.ValueMember = "Id";
+
+            BindingSource bnd = new BindingSource();
+            bnd.DataSource = data.Issues;
+            DataGridViewIssues.AutoGenerateColumns = true;
+            DataGridViewIssues.DataSource = bnd;
+            DataGridViewIssues.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+            if (DataGridViewIssues.Columns.Count > 0)
+            {
+                DataGridViewIssues.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;    
+            }
+            updating = false;
         }
 
         private void LoadConfig()
         {
             RedmineURL = ConfigurationManager.AppSettings["RedmineURL"];
+            RedmineAuthentication = Convert.ToBoolean(ConfigurationManager.AppSettings["RedmineAuthentication"]);
             RedmineUser = ConfigurationManager.AppSettings["RedmineUser"];
             RedminePassword = ConfigurationManager.AppSettings["RedminePassword"];
         }
@@ -265,29 +309,18 @@ namespace Nohal.Redmine.Client
 
         private void ComboBoxProject_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!Int32.TryParse(ComboBoxProject.SelectedValue.ToString(), out projectId))
+            if (!updating)
             {
-                projectId = 0;
-            }
-            else
-            {
-                // TODO: takes some time, maybe we could move it to worker thread
+                int reselect = ComboBoxProject.SelectedIndex;
                 this.Cursor = Cursors.AppStarting;
-                BindingSource bnd = new BindingSource();
-                List<Activity> activities = redmine.GetActivities(projectId);
-                ComboBoxActivity.DataSource = activities;
-                ComboBoxActivity.DisplayMember = "Description";
-                ComboBoxActivity.ValueMember = "Id";
-                List<Issue> issues = redmine.GetIssues(projectId);
-                bnd.DataSource = issues;
-                DataGridViewIssues.AutoGenerateColumns = true;
-                DataGridViewIssues.DataSource = bnd;
-                DataGridViewIssues.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
-                if (DataGridViewIssues.Columns.Count > 0)
+                if (!Int32.TryParse(ComboBoxProject.SelectedValue.ToString(), out projectId))
                 {
-                    DataGridViewIssues.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;    
+                    projectId = 0;
                 }
-                
+                FillForm(PrepareFormData(projectId));
+                updating = true;
+                ComboBoxProject.SelectedIndex = reselect;
+                updating = false;
                 this.Cursor = Cursors.Default;
             }
         }
@@ -297,5 +330,82 @@ namespace Nohal.Redmine.Client
             return Type.GetType("Mono.Runtime") != null;
         }
 
+        private void BtnRefreshButton_Click(object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.AppStarting;
+            if (ComboBoxProject.SelectedValue != null)
+            {
+                if (!Int32.TryParse(ComboBoxProject.SelectedValue.ToString(), out projectId))
+                {
+                    projectId = 0;
+                }
+            }
+            else
+            {
+                projectId = 0;
+            }
+            try
+            {
+                FillForm(PrepareFormData(projectId));
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            this.Cursor = Cursors.Default;
+        }
+
+        private void BtnSettingsButton_Click(object sender, EventArgs e)
+        {
+            SettingsForm dlg = new SettingsForm();
+            if (dlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+            {
+                this.Cursor = Cursors.AppStarting;
+                LoadConfig();
+                redmine.RedmineBaseUri = RedmineURL;
+                if (RedmineAuthentication)
+                {
+                    redmine.RedmineUser = RedmineUser;
+                    redmine.RedminePassword = RedminePassword;
+                }
+                
+                try
+                {
+                    FillForm(PrepareFormData(0));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                this.Cursor = Cursors.Default;
+            }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            FormData data;
+            try
+            {
+                data = PrepareFormData((int)e.Argument);
+                e.Result = data;
+            }
+            catch (Exception ex)
+            {
+                e.Result = ex;
+            }
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Result.GetType() != typeof(Exception))
+            {
+                FillForm((FormData)e.Result);
+            }
+            else
+            {
+                MessageBox.Show(((Exception) e.Result).Message);
+            }
+            this.Cursor = Cursors.Default;
+        }
     }
 }

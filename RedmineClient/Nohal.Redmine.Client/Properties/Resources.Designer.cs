@@ -59,5 +59,12 @@ namespace Nohal.Redmine.Client.Properties {
                 resourceCulture = value;
             }
         }
+        
+        internal static System.Drawing.Icon clock {
+            get {
+                object obj = ResourceManager.GetObject("clock", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }

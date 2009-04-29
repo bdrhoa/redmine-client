@@ -31,7 +31,6 @@ namespace Nohal.Redmine.Client
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RedmineClientForm));
             this.TextBoxHours = new System.Windows.Forms.TextBox();
             this.TextBoxMinutes = new System.Windows.Forms.TextBox();
             this.TextBoxSeconds = new System.Windows.Forms.TextBox();
@@ -54,6 +53,8 @@ namespace Nohal.Redmine.Client
             this.BtnExitButton = new System.Windows.Forms.Button();
             this.BtnResetButton = new System.Windows.Forms.Button();
             this.BtnAboutButton = new System.Windows.Forms.Button();
+            this.BtnSettingsButton = new System.Windows.Forms.Button();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.NotifyIconMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridViewIssues)).BeginInit();
             this.SuspendLayout();
@@ -170,8 +171,6 @@ namespace Nohal.Redmine.Client
             // notifyIcon1
             // 
             this.notifyIcon1.ContextMenuStrip = this.NotifyIconMenuStrip;
-            if (!IsRunningOnMono())
-                this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Text = "Redmine Client";
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
@@ -218,13 +217,13 @@ namespace Nohal.Redmine.Client
             // 
             // BtnRefreshButton
             // 
-            this.BtnRefreshButton.Enabled = false;
             this.BtnRefreshButton.Location = new System.Drawing.Point(544, 86);
             this.BtnRefreshButton.Name = "BtnRefreshButton";
             this.BtnRefreshButton.Size = new System.Drawing.Size(75, 23);
             this.BtnRefreshButton.TabIndex = 17;
             this.BtnRefreshButton.Text = "Refresh";
             this.BtnRefreshButton.UseVisualStyleBackColor = true;
+            this.BtnRefreshButton.Click += new System.EventHandler(this.BtnRefreshButton_Click);
             // 
             // BtnExitButton
             // 
@@ -256,11 +255,27 @@ namespace Nohal.Redmine.Client
             this.BtnAboutButton.UseVisualStyleBackColor = true;
             this.BtnAboutButton.Click += new System.EventHandler(this.BtnAboutButton_Click);
             // 
+            // BtnSettingsButton
+            // 
+            this.BtnSettingsButton.Location = new System.Drawing.Point(544, 408);
+            this.BtnSettingsButton.Name = "BtnSettingsButton";
+            this.BtnSettingsButton.Size = new System.Drawing.Size(75, 23);
+            this.BtnSettingsButton.TabIndex = 21;
+            this.BtnSettingsButton.Text = "Settings";
+            this.BtnSettingsButton.UseVisualStyleBackColor = true;
+            this.BtnSettingsButton.Click += new System.EventHandler(this.BtnSettingsButton_Click);
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
             // RedmineClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(627, 501);
+            this.Controls.Add(this.BtnSettingsButton);
             this.Controls.Add(this.BtnAboutButton);
             this.Controls.Add(this.BtnResetButton);
             this.Controls.Add(this.BtnRefreshButton);
@@ -279,8 +294,6 @@ namespace Nohal.Redmine.Client
             this.Controls.Add(this.TextBoxMinutes);
             this.Controls.Add(this.TextBoxHours);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            if (!IsRunningOnMono())
-                this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "RedmineClientForm";
@@ -317,6 +330,8 @@ namespace Nohal.Redmine.Client
         private Button BtnExitButton;
         private Button BtnResetButton;
         private Button BtnAboutButton;
+        private Button BtnSettingsButton;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 
