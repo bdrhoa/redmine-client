@@ -50,9 +50,13 @@
     <Compile Include="AtomEntry.cs" />
     <Compile Include="AtomParser.cs" />
     <Compile Include="Issue.cs" />
+    <Compile Include="Priority.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Redmine.cs" />
+    <Compile Include="Status.cs" />
+    <Compile Include="Tracker.cs" />
+    <Compile Include="User.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

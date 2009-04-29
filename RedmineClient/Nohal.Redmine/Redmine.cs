@@ -34,7 +34,17 @@ namespace Nohal.Redmine
         /// <summary>
         /// Relative path to the list of all the project issues
         /// </summary>
-        private const string IssueListRelativeUri = "/projects/{0}/issues?format=atom";
+        private const string IssueListRelativeUri = "/projects/{0}/issues?format=atom&per_page=999999";
+
+        /// <summary>
+        /// Relative path to the project settings Information form
+        /// </summary>
+        private const string ProjectSettingsInfoUri = "/projects/settings/{0}";
+
+        /// <summary>
+        /// Relative path to the new issue form
+        /// </summary>
+        private const string NewIssueRelativeUri = "/projects/{0}/issues/new";
         
         /// <summary>
         /// Relative path to the time logging form
@@ -157,7 +167,7 @@ namespace Nohal.Redmine
         /// Gets the list of all available project activities
         /// </summary>
         /// <param name="projectId">Project Id</param>
-        /// <returns>List of all the projects available for the user</returns>
+        /// <returns>List of all the activities available for the user</returns>
         public List<Activity> GetActivities(int projectId)
         {
             Uri uri = new Uri(this.redmineBaseUri, String.Format(TimeLogFormRelativeUri, projectId));
@@ -165,19 +175,92 @@ namespace Nohal.Redmine
             XmlDocument docx = new XmlDocument();
             docx.LoadXml(s);
             List<Activity> activities = new List<Activity>();
-            XmlNode formfield = docx.GetElementById("time_entry_activity_id");
-            if (formfield != null)
+            foreach (KeyValuePair<int, string> kv in ParseSelect(docx.GetElementById("time_entry_activity_id")))
             {
-                foreach (XmlNode list in formfield.ChildNodes)
-                {
-                    if (list.Attributes["value"].Value != String.Empty)
-                    {
-                        activities.Add(new Activity() { Id = Convert.ToInt32(list.Attributes["value"].Value), Description = list.InnerText });
-                    }
-                }
+                activities.Add(new Activity() { Id = kv.Key, Description = kv.Value });
             }
 
             return activities;
+        }
+
+        /// <summary>
+        /// Gets the list of all available project trackers
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <returns>List of all the trackers available for the user in selected project</returns>
+        public List<Tracker> GetTrackers(int projectId)
+        {
+            Uri uri = new Uri(this.redmineBaseUri, String.Format(NewIssueRelativeUri, projectId));
+            string s = this.GetWebRequest(uri);
+            XmlDocument docx = new XmlDocument();
+            docx.LoadXml(s);
+            List<Tracker> trackers = new List<Tracker>();
+            foreach (KeyValuePair<int, string> kv in ParseSelect(docx.GetElementById("issue_tracker_id")))
+            {
+                trackers.Add(new Tracker() {Id = kv.Key, Name = kv.Value});
+            }
+
+            return trackers;
+        }
+
+        /// <summary>
+        /// Gets the list of all available project issue statuses
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <returns>List of all the issue statuses available for the user in selected project</returns>
+        public List<Status> GetStatuses(int projectId)
+        {
+            Uri uri = new Uri(this.redmineBaseUri, String.Format(NewIssueRelativeUri, projectId));
+            string s = this.GetWebRequest(uri);
+            XmlDocument docx = new XmlDocument();
+            docx.LoadXml(s);
+            List<Status> statuses = new List<Status>();
+            foreach (KeyValuePair<int, string> kv in ParseSelect(docx.GetElementById("issue_status_id")))
+            {
+                statuses.Add(new Status() { Id = kv.Key, Name = kv.Value });
+            }
+
+            return statuses;
+        }
+
+        /// <summary>
+        /// Gets the list of all available project issue priorities
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <returns>List of all the issue priorities available for the user in selected project</returns>
+        public List<Priority> GetPriorities(int projectId)
+        {
+            Uri uri = new Uri(this.redmineBaseUri, String.Format(NewIssueRelativeUri, projectId));
+            string s = this.GetWebRequest(uri);
+            XmlDocument docx = new XmlDocument();
+            docx.LoadXml(s);
+            List<Priority> priorities = new List<Priority>();
+            foreach (KeyValuePair<int, string> kv in ParseSelect(docx.GetElementById("issue_priority_id")))
+            {
+                priorities.Add(new Priority() { Id = kv.Key, Name = kv.Value });
+            }
+
+            return priorities;
+        }
+
+        /// <summary>
+        /// Gets the list of all users available to be assigned to project issue
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <returns>List of all the users available to be assigned to project issues</returns>
+        public List<User> GetAsignees(int projectId)
+        {
+            Uri uri = new Uri(this.redmineBaseUri, String.Format(NewIssueRelativeUri, projectId));
+            string s = this.GetWebRequest(uri);
+            XmlDocument docx = new XmlDocument();
+            docx.LoadXml(s);
+            List<User> users = new List<User>();
+            foreach (KeyValuePair<int, string> kv in ParseSelect(docx.GetElementById("issue_assigned_to_id")))
+            {
+                users.Add(new User() { Id = kv.Key, Name = kv.Value });
+            }
+
+            return users;
         }
 
         /// <summary>
@@ -281,6 +364,27 @@ namespace Nohal.Redmine
         private string PostWebRequest(Uri requestUri, string postDataText)
         {
             return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "POST", postDataText);
+        }
+
+        /// <summary>
+        /// Parses XHTML combobox possible values
+        /// </summary>
+        /// <param name="selectNode">DOM node representing combobox</param>
+        /// <returns>Collection of Key->Value pairs</returns>
+        private List<KeyValuePair<int, string>> ParseSelect(XmlNode selectNode)
+        {
+            List<KeyValuePair<int, string>> parsed = new List<KeyValuePair<int, string>>();
+            if (selectNode != null)
+            {
+                foreach (XmlNode list in selectNode.ChildNodes)
+                {
+                    if (list.Attributes["value"].Value != String.Empty)
+                    {
+                        parsed.Add(new KeyValuePair<int, string>(Convert.ToInt32(list.Attributes["value"].Value), list.InnerText));
+                    }
+                }
+            }
+            return parsed;
         }
     }
 }
