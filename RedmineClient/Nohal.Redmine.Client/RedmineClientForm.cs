@@ -350,7 +350,7 @@ namespace Nohal.Redmine.Client
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
             this.Cursor = Cursors.Default;
         }
@@ -375,7 +375,7 @@ namespace Nohal.Redmine.Client
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 }
                 this.Cursor = Cursors.Default;
             }
@@ -397,13 +397,13 @@ namespace Nohal.Redmine.Client
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Result.GetType() != typeof(Exception))
+            if (e.Result is Exception)
             {
-                FillForm((FormData)e.Result);
+                MessageBox.Show(((Exception) e.Result).Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
             else
             {
-                MessageBox.Show(((Exception) e.Result).Message);
+				FillForm((FormData)e.Result);
             }
             this.Cursor = Cursors.Default;
         }
