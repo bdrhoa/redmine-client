@@ -1,3 +1,7 @@
+System Requirements
+
+* The application was tested to run on .NET Framework 2.0 and Mono 2.4
+
 Installation
 
 * Unzip the archive
