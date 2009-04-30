@@ -36,10 +36,10 @@ namespace Nohal.Redmine.Client
                 this.notifyIcon1.Icon = (Icon)Properties.Resources.ResourceManager.GetObject("clock");
                 this.notifyIcon1.Visible = true;
             }
-            else
-            {
-                this.MinimizeBox = true;
-            }
+			else 
+			{
+				this.DataGridViewIssues.Click += new System.EventHandler(this.DataGridViewIssues_SelectionChanged);
+			}
             redmine = new Redmine();
             LoadConfig();
             redmine.RedmineBaseUri = RedmineURL;
@@ -87,6 +87,17 @@ namespace Nohal.Redmine.Client
             {
                 DataGridViewIssues.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;    
             }
+			if (IsRunningOnMono())
+			{
+				ComboBoxActivity.SelectedIndex = 1;
+				ComboBoxProject.SelectedIndex = 1;
+				DataGridViewIssues.Rows[0].Selected = true;
+				DataGridViewIssues_SelectionChanged(null, null);
+				if (!Int32.TryParse(ComboBoxProject.SelectedValue.ToString(), out projectId))
+                {
+                    projectId = 0;
+                }
+			}
             updating = false;
         }
 
@@ -105,13 +116,10 @@ namespace Nohal.Redmine.Client
 
         private void HideRestore()
         {
-            if (this.Visible)// WindowState == FormWindowState.Normal)
+            if (WindowState == FormWindowState.Normal)
             {
                 WindowState = FormWindowState.Minimized;
-                if(!IsRunningOnMono())
-                {
-                    Hide(); // we do not use notification icon on mono
-                }
+                Hide();
                 RestoreToolStripMenuItem.Text = "Restore";
             }
             else
@@ -119,7 +127,6 @@ namespace Nohal.Redmine.Client
                 WindowState = FormWindowState.Normal;
                 Show();
                 RestoreToolStripMenuItem.Text = "Hide";
-                Activate();
             }
         }
 
@@ -136,17 +143,13 @@ namespace Nohal.Redmine.Client
 
         private void BtnExitButton_Click(object sender, EventArgs e)
         {
-            Quit();
+            notifyIcon1.Dispose();
+            Application.Exit();
         }
 
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Quit();
-        }
-
-        private void Quit()
-        {
-            if (notifyIcon1 != null) notifyIcon1.Dispose();
+            notifyIcon1.Dispose();
             Application.Exit();
         }
 
@@ -304,10 +307,12 @@ namespace Nohal.Redmine.Client
                 {
                     MessageBox.Show("There is no time to log...", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);   
                 }
-                else
-                {
-                    MessageBox.Show("Some mandatory information is missing...", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);   
-                }
+				{
+                    MessageBox.Show("Some mandatory information is missing...", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                	MessageBox.Show(String.Format("Do you really want to commit the following entry: {6} Project: {0}, Activity: {1}, Issue: {2}, Date: {3}, Comment: {4}, Time: {5}", 
+                    projectId, activityId, issueId, dateTimePicker1.Value.ToString("yyyy-MM-dd"), TextBoxComment.Text, String.Format("{0:0.##}", (double)ticks / 3600), Environment.NewLine), 
+                    "Ready to commit?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+				}
             }
         }
 
