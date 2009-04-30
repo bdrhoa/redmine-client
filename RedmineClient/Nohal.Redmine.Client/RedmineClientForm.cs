@@ -49,6 +49,8 @@ namespace Nohal.Redmine.Client
                 redmine.RedminePassword = RedminePassword; 
             }
             this.Cursor = Cursors.AppStarting;
+            this.BtnCommitButton.Enabled = false;
+            this.BtnRefreshButton.Enabled = false;
             backgroundWorker1.RunWorkerAsync(0);
         }
 
@@ -70,6 +72,16 @@ namespace Nohal.Redmine.Client
         private void FillForm(FormData data)
         {
             updating = true;
+            if (data.Projects.Count == 0 || data.Issues.Count == 0 || data.Activities.Count == 0)
+            {
+                BtnCommitButton.Enabled = false;
+                BtnRefreshButton.Enabled = true;
+            }
+            else
+            {
+                BtnCommitButton.Enabled = true;
+                BtnRefreshButton.Enabled = true;
+            }
             ComboBoxProject.DataSource = data.Projects;
             ComboBoxProject.ValueMember = "Id";
             ComboBoxProject.DisplayMember = "Name";
@@ -87,17 +99,15 @@ namespace Nohal.Redmine.Client
             {
                 DataGridViewIssues.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;    
             }
-			if (IsRunningOnMono())
-			{
-				ComboBoxActivity.SelectedIndex = 1;
-				ComboBoxProject.SelectedIndex = 1;
-				DataGridViewIssues.Rows[0].Selected = true;
-				DataGridViewIssues_SelectionChanged(null, null);
-				if (!Int32.TryParse(ComboBoxProject.SelectedValue.ToString(), out projectId))
-                {
-                    projectId = 0;
-                }
-			}
+
+			ComboBoxActivity.SelectedIndex = 1;
+			ComboBoxProject.SelectedIndex = 1;
+			DataGridViewIssues.Rows[0].Selected = true;
+			DataGridViewIssues_SelectionChanged(null, null);
+			if (!Int32.TryParse(ComboBoxProject.SelectedValue.ToString(), out projectId))
+            {
+                projectId = 0;
+            }
             updating = false;
         }
 
@@ -307,11 +317,9 @@ namespace Nohal.Redmine.Client
                 {
                     MessageBox.Show("There is no time to log...", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);   
                 }
+                else
 				{
                     MessageBox.Show("Some mandatory information is missing...", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                	MessageBox.Show(String.Format("Do you really want to commit the following entry: {6} Project: {0}, Activity: {1}, Issue: {2}, Date: {3}, Comment: {4}, Time: {5}", 
-                    projectId, activityId, issueId, dateTimePicker1.Value.ToString("yyyy-MM-dd"), TextBoxComment.Text, String.Format("{0:0.##}", (double)ticks / 3600), Environment.NewLine), 
-                    "Ready to commit?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 				}
             }
         }
