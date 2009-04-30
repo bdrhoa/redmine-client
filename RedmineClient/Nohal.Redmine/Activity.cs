@@ -7,7 +7,6 @@
 // <summary>Class representing the activity performed while working on an issue.</summary>
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Nohal.Redmine
