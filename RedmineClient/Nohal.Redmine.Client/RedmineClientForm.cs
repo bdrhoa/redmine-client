@@ -100,13 +100,22 @@ namespace Nohal.Redmine.Client
                 DataGridViewIssues.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;    
             }
 
-			ComboBoxActivity.SelectedIndex = 1;
-			ComboBoxProject.SelectedIndex = 1;
-			DataGridViewIssues.Rows[0].Selected = true;
-			DataGridViewIssues_SelectionChanged(null, null);
-			if (!Int32.TryParse(ComboBoxProject.SelectedValue.ToString(), out projectId))
+            if (ComboBoxProject.Items.Count > 0)
             {
-                projectId = 0;
+                ComboBoxProject.SelectedIndex = 0;
+                if (!Int32.TryParse(ComboBoxProject.SelectedValue.ToString(), out projectId))
+                {
+                    projectId = 0;
+                }   
+            }
+            if (ComboBoxActivity.Items.Count > 0)
+            {
+                ComboBoxActivity.SelectedIndex = 0;
+            }
+            if (DataGridViewIssues.Rows.Count > 0)
+            {
+                DataGridViewIssues.Rows[0].Selected = true;
+                DataGridViewIssues_SelectionChanged(null, null);
             }
             updating = false;
         }
@@ -358,8 +367,10 @@ namespace Nohal.Redmine.Client
         private void BtnRefreshButton_Click(object sender, EventArgs e)
         {
             this.Cursor = Cursors.AppStarting;
+            int selectedProject = 0;
             if (ComboBoxProject.SelectedValue != null)
             {
+                selectedProject = ComboBoxProject.SelectedIndex;
                 if (!Int32.TryParse(ComboBoxProject.SelectedValue.ToString(), out projectId))
                 {
                     projectId = 0;
@@ -372,6 +383,7 @@ namespace Nohal.Redmine.Client
             try
             {
                 FillForm(PrepareFormData(projectId));
+                ComboBoxProject.SelectedIndex = selectedProject;
             }
             catch(Exception ex)
             {
