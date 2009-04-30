@@ -309,7 +309,7 @@ namespace Nohal.Redmine.Client
                 {
                     redmine.LogTimeForIssue(projectId, issueId, TextBoxComment.Text, (double)ticks / 3600, dateTimePicker1.Value, activityId);
                     ResetForm();
-                    MessageBox.Show("Work loggedsuccessfully ", "Work logged", MessageBoxButtons.OK,
+                    MessageBox.Show("Work logged successfully ", "Work logged", MessageBoxButtons.OK,
                                     MessageBoxIcon.Information);
                 }
                 else if (shouldIRestart)
