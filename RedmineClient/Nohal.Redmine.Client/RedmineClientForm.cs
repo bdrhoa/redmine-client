@@ -36,6 +36,10 @@ namespace Nohal.Redmine.Client
                 this.notifyIcon1.Icon = (Icon)Properties.Resources.ResourceManager.GetObject("clock");
                 this.notifyIcon1.Visible = true;
             }
+            else
+            {
+                this.MinimizeBox = true;
+            }
             redmine = new Redmine();
             LoadConfig();
             redmine.RedmineBaseUri = RedmineURL;
@@ -101,10 +105,13 @@ namespace Nohal.Redmine.Client
 
         private void HideRestore()
         {
-            if (WindowState == FormWindowState.Normal)
+            if (this.Visible)// WindowState == FormWindowState.Normal)
             {
                 WindowState = FormWindowState.Minimized;
-                Hide();
+                if(!IsRunningOnMono())
+                {
+                    Hide(); // we do not use notification icon on mono
+                }
                 RestoreToolStripMenuItem.Text = "Restore";
             }
             else
@@ -112,6 +119,7 @@ namespace Nohal.Redmine.Client
                 WindowState = FormWindowState.Normal;
                 Show();
                 RestoreToolStripMenuItem.Text = "Hide";
+                Activate();
             }
         }
 
@@ -128,13 +136,17 @@ namespace Nohal.Redmine.Client
 
         private void BtnExitButton_Click(object sender, EventArgs e)
         {
-            notifyIcon1.Dispose();
-            Application.Exit();
+            Quit();
         }
 
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            notifyIcon1.Dispose();
+            Quit();
+        }
+
+        private void Quit()
+        {
+            if (notifyIcon1 != null) notifyIcon1.Dispose();
             Application.Exit();
         }
 
