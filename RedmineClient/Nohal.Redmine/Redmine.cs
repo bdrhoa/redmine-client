@@ -7,6 +7,7 @@
 // <summary>Contains a wrapper for the Redmine project management system.</summary>
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Security.Authentication;
@@ -84,9 +85,9 @@ namespace Nohal.Redmine
         private bool authenticated = false;
 
         /// <summary>
-        /// Te container for assigner session cookie
+        /// Http Helper class
         /// </summary>
-        private CookieContainer cookieJar;
+        private HttpHelper httpHelper;
 
         /// <summary>
         /// Gets or sets the base URI of the Redmine installation
@@ -137,6 +138,14 @@ namespace Nohal.Redmine
         }
 
         /// <summary>
+        /// Initializes a new instance of the Redmine class.
+        /// </summary>
+        public Redmine()
+        {
+            this.httpHelper = new HttpHelper();
+        }
+
+        /// <summary>
         /// Logs user into Redmine
         /// </summary>
         public void LogIn()
@@ -148,7 +157,7 @@ namespace Nohal.Redmine
                                                        this.ConstructUri(ProjectListRelativeUri).ToString()),
                                                    System.Web.HttpUtility.UrlEncode(this.RedmineUser),
                                                    System.Web.HttpUtility.UrlEncode(this.RedminePassword));
-                XhtmlPage page = new XhtmlPage(this.PostWebRequest(this.ConstructUri(LoginRelativeUri), requestData));
+                XhtmlPage page = new XhtmlPage(this.httpHelper.PostWebRequest(this.ConstructUri(LoginRelativeUri), requestData));
 
                 // if we get a feed with projects, we assume that we are successfully authenticated
                 // if we do get xhtml, it's the login form again
@@ -182,7 +191,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the projects available to the user</returns>
         public List<Project> GetProjects()
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(ProjectListRelativeUri)));
+            XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(ProjectListRelativeUri)));
             List<Project> projects = new List<Project>();
             foreach (AtomEntry entry in AtomParser.ParseFeed(page.XmlDocument))
             {
@@ -203,7 +212,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the available issues for the project</returns>
         public List<Issue> GetIssues(int projectId)
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(IssueListRelativeUri, projectId))));
+            XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(IssueListRelativeUri, projectId))));
             List<Issue> issues = new List<Issue>();
             foreach (AtomEntry entry in AtomParser.ParseFeed(page.XmlDocument))
             {
@@ -224,7 +233,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the activities available for the user</returns>
         public List<Activity> GetActivities(int projectId)
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(TimeLogFormRelativeUri, projectId))));
+            XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(TimeLogFormRelativeUri, projectId))));
 
             List<Activity> activities = new List<Activity>();
             foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("time_entry_activity_id"))
@@ -242,7 +251,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the trackers available for the user in selected project</returns>
         public List<Tracker> GetTrackers(int projectId)
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
+            XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<Tracker> trackers = new List<Tracker>();
             foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_tracker_id"))
             {
@@ -259,7 +268,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the issue statuses available for the user in selected project</returns>
         public List<Status> GetStatuses(int projectId)
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
+            XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<Status> statuses = new List<Status>();
             foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_status_id"))
             {
@@ -276,7 +285,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the issue priorities available for the user in selected project</returns>
         public List<Priority> GetPriorities(int projectId)
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
+            XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<Priority> priorities = new List<Priority>();
             foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_priority_id"))
             {
@@ -293,7 +302,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the versions available for the user in selected project</returns>
         public List<Version> GetVersions(int projectId)
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
+            XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<Version> versions = new List<Version>();
             foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_fixed_version_id"))
             {
@@ -310,7 +319,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the users available as watchers for the project</returns>
         public List<User> GetWatchers(int projectId)
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
+            XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<User> watchers = new List<User>();
             foreach (KeyValuePair<int, string> kv in page.GetCheckBoxOptions("issue[watcher_user_ids][]"))
             {
@@ -327,7 +336,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the users available to be assigned to project issues</returns>
         public List<User> GetAsignees(int projectId)
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
+            XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<User> users = new List<User>();
             foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_assigned_to_id"))
             {
@@ -356,93 +365,20 @@ namespace Nohal.Redmine
                                                System.Web.HttpUtility.UrlEncode(String.Format("{0:0.##}", timeSpent)),
                                                System.Web.HttpUtility.UrlEncode(description),
                                                System.Web.HttpUtility.UrlEncode(activityId.ToString()));
-            this.PostWebRequest(this.ConstructUri(String.Format(TimeLogFormRelativeUri, projectId)), requestData);
+            this.httpHelper.PostWebRequest(this.ConstructUri(String.Format(TimeLogFormRelativeUri, projectId)), requestData);
         }
 
         /// <summary>
-        /// Makes a web request
+        /// Creates new issue in Redmine
         /// </summary>
-        /// <param name="request">Web request</param>
-        /// <param name="method">Request method</param>
-        /// <param name="postDataText">URLEncoded text for the post body</param>
-        /// <returns>The response text</returns>
-        private string WebRequest(HttpWebRequest request, string method, string postDataText)
+        /// <param name="newIssue">Issue to create in Redmine</param>
+        public void CreateIssue(Issue newIssue)
         {
-            if (!this.authenticated)
+            NameValueCollection requestParameters = new NameValueCollection();
+            foreach(User user in newIssue.Watchers)
             {
-                this.cookieJar = new CookieContainer();
+                requestParameters.Add("issue[watcher_user_ids][]", user.Id.ToString());
             }
-
-            if (this.cookieJar != null)
-            {
-                request.CookieContainer = this.cookieJar;
-            }
-
-            request.UserAgent = "Nohal.Redmine";
-            //// set the connection keep-alive
-            request.KeepAlive = true; // this is the default
-            //// we don't want caching to take place so we need
-            //// to set the pragma header to say we don't want caching
-            request.Headers.Set("Pragma", "no-cache");
-            //// set the request timeout to 5 min.
-            request.Timeout = 300000;
-            //// set the request method
-            request.Method = method;
-
-            //// add the content type so we can handle form data
-            request.ContentType = "application/x-www-form-urlencoded";
-            if (request.Method == "POST")
-            {
-                //// we need to store the data into a byte array
-                byte[] postData = Encoding.ASCII.GetBytes(postDataText);
-                request.ContentLength = postData.Length;
-                Stream tempStream = request.GetRequestStream();
-                //// write the data to be posted to the Request Stream
-                tempStream.Write(postData, 0, postData.Length);
-                tempStream.Close();
-            }
-
-            HttpWebResponse httpWResponse;
-            try
-            {
-                httpWResponse = (HttpWebResponse)request.GetResponse();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(String.Format("The request to Redmine URL {0} caused the following exception: {1}.", request.Address, ex.Message));
-            }
-
-            if (this.cookieJar == null)
-            {
-                this.cookieJar = new CookieContainer();
-                this.cookieJar.Add(httpWResponse.Cookies);
-            }
-
-            StreamReader sr = new StreamReader(httpWResponse.GetResponseStream(), Encoding.UTF8);
-            string s = sr.ReadToEnd();
-            httpWResponse.Close();
-            return s;
-        }
-
-        /// <summary>
-        /// Makes a web request using GET method
-        /// </summary>
-        /// <param name="requestUri">Requested address</param>
-        /// <returns>The response text</returns>
-        private string GetWebRequest(Uri requestUri)
-        {
-            return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "GET", String.Empty);
-        }
-
-        /// <summary>
-        /// Makes a web request using POST method
-        /// </summary>
-        /// <param name="requestUri">Requested address</param>
-        /// <param name="postDataText">URLEncoded text for the post body</param>
-        /// <returns>The response text</returns>
-        private string PostWebRequest(Uri requestUri, string postDataText)
-        {
-            return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "POST", postDataText);
         }
 
         /// <summary>
