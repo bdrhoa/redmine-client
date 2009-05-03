@@ -5,10 +5,6 @@
 // <email>pavel@kalian.cz</email>
 // <date>2009-04-29</date>
 // <summary>Class representing the issue tracker.</summary>
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Nohal.Redmine
 {
     /// <summary>

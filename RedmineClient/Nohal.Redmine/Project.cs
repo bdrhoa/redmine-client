@@ -5,10 +5,6 @@
 // <email>pavel@kalian.cz</email>
 // <date>2009-04-27</date>
 // <summary>Class representing the project in Redmine.</summary>
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Nohal.Redmine
 {
     /// <summary>
