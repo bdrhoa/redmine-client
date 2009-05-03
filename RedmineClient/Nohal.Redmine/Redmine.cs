@@ -331,8 +331,8 @@ namespace Nohal.Redmine
         /// <param name="request">Web request</param>
         /// <param name="method">Request method</param>
         /// <param name="postDataText">URLEncoded text for the post body</param>
-        /// <returns>The response stream</returns>
-        private Stream WebRequest(HttpWebRequest request, string method, string postDataText)
+        /// <returns>The response text</returns>
+        private string WebRequest(HttpWebRequest request, string method, string postDataText)
         {
             if (!this.authenticated)
             {
@@ -384,7 +384,8 @@ namespace Nohal.Redmine
                 this.cookieJar.Add(httpWResponse.Cookies);
             }
 
-            Stream s = httpWResponse.GetResponseStream();
+            StreamReader sr = new StreamReader(httpWResponse.GetResponseStream(), Encoding.UTF8);
+            string s = sr.ReadToEnd();
             httpWResponse.Close();
             return s;
         }
@@ -393,8 +394,8 @@ namespace Nohal.Redmine
         /// Makes a web request using GET method
         /// </summary>
         /// <param name="requestUri">Requested address</param>
-        /// <returns>The response stream</returns>
-        private Stream GetWebRequest(Uri requestUri)
+        /// <returns>The response text</returns>
+        private string GetWebRequest(Uri requestUri)
         {
             return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "GET", String.Empty);
         }
@@ -404,8 +405,8 @@ namespace Nohal.Redmine
         /// </summary>
         /// <param name="requestUri">Requested address</param>
         /// <param name="postDataText">URLEncoded text for the post body</param>
-        /// <returns>The response stream</returns>
-        private Stream PostWebRequest(Uri requestUri, string postDataText)
+        /// <returns>The response text</returns>
+        private string PostWebRequest(Uri requestUri, string postDataText)
         {
             return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "POST", postDataText);
         }
