@@ -21,18 +21,17 @@ namespace Nohal.Redmine
         /// </summary>
         /// <param name="feedXml">XML of the feed</param>
         /// <returns>List of all the entries</returns>
-        protected internal static List<AtomEntry> ParseFeed(string feedXml)
+        protected internal static List<AtomEntry> ParseFeed(XmlDocument feedXml)
         {
-            XmlDocument doc = new XmlDocument();
-            XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(feedXml.NameTable);
             nsmgr.AddNamespace("atom", "http://www.w3.org/2005/Atom");
-            doc.LoadXml(feedXml);
+
 
             // successful
-            if (doc.DocumentElement != null)
+            if (feedXml.DocumentElement != null)
             {
-                XmlNodeList titles = doc.DocumentElement.SelectNodes("//atom:entry/atom:title", nsmgr);
-                XmlNodeList ids = doc.DocumentElement.SelectNodes("//atom:entry/atom:id", nsmgr);
+                XmlNodeList titles = feedXml.DocumentElement.SelectNodes("//atom:entry/atom:title", nsmgr);
+                XmlNodeList ids = feedXml.DocumentElement.SelectNodes("//atom:entry/atom:id", nsmgr);
 
                 List<AtomEntry> entries = new List<AtomEntry>();
 
@@ -51,7 +50,7 @@ namespace Nohal.Redmine
                 return entries;
             }
 
-            throw new ArgumentOutOfRangeException("feedXml", "The text provided is not valid XML.");
+            throw new ArgumentOutOfRangeException("feedXml", "No XML document provided");
         }
     }
 }

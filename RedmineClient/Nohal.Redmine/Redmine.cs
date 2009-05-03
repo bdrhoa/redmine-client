@@ -148,14 +148,12 @@ namespace Nohal.Redmine
                                                        ConstructUri(ProjectListRelativeUri).ToString()),
                                                    System.Web.HttpUtility.UrlEncode(this.RedmineUser),
                                                    System.Web.HttpUtility.UrlEncode(this.RedminePassword));
-                string s = this.PostWebRequest(ConstructUri(LoginRelativeUri), requestData);
-                XmlDocument xml = new XmlDocument();
-                xml.LoadXml(s);
+                XhtmlPage page = new XhtmlPage(this.PostWebRequest(ConstructUri(LoginRelativeUri), requestData));
 
                 // if we get a feed with projects, we assume that we are successfully authenticated
                 // if we do get xhtml, it's the login form again
                 // this solution is quite ugly, but redmine doesn't provide much help in knowing what went wrong anyway...
-                if (xml.DocumentElement != null && xml.DocumentElement.Name == "feed")
+                if (page.XmlDocument.DocumentElement != null && page.XmlDocument.DocumentElement.Name == "feed")
                 {
                     this.authenticated = true;
                 }
@@ -184,9 +182,9 @@ namespace Nohal.Redmine
         /// <returns>List of all the projects available to the user</returns>
         public List<Project> GetProjects()
         {
-            string s = this.GetWebRequest(ConstructUri(ProjectListRelativeUri));
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(ConstructUri(ProjectListRelativeUri)));
             List<Project> projects = new List<Project>();
-            foreach (AtomEntry entry in AtomParser.ParseFeed(s))
+            foreach (AtomEntry entry in AtomParser.ParseFeed(page.XmlDocument))
             {
                 projects.Add(new Project
                                  {
@@ -205,9 +203,9 @@ namespace Nohal.Redmine
         /// <returns>List of all the available issues for the project</returns>
         public List<Issue> GetIssues(int projectId)
         {
-            string s = this.GetWebRequest(ConstructUri(String.Format(IssueListRelativeUri, projectId)));
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(ConstructUri(String.Format(IssueListRelativeUri, projectId))));
             List<Issue> issues = new List<Issue>();
-            foreach (AtomEntry entry in AtomParser.ParseFeed(s))
+            foreach (AtomEntry entry in AtomParser.ParseFeed(page.XmlDocument))
             {
                 issues.Add(new Issue
                 {
@@ -226,11 +224,10 @@ namespace Nohal.Redmine
         /// <returns>List of all the activities available for the user</returns>
         public List<Activity> GetActivities(int projectId)
         {
-            string s = this.GetWebRequest(ConstructUri(String.Format(TimeLogFormRelativeUri, projectId)));
-            XmlDocument docx = new XmlDocument();
-            docx.LoadXml(s);
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(ConstructUri(String.Format(TimeLogFormRelativeUri, projectId))));
+
             List<Activity> activities = new List<Activity>();
-            foreach (KeyValuePair<int, string> kv in ParseSelect(docx.GetElementById("time_entry_activity_id")))
+            foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("time_entry_activity_id"))
             {
                 activities.Add(new Activity() { Id = kv.Key, Description = kv.Value });
             }
@@ -245,11 +242,9 @@ namespace Nohal.Redmine
         /// <returns>List of all the trackers available for the user in selected project</returns>
         public List<Tracker> GetTrackers(int projectId)
         {
-            string s = this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId)));
-            XmlDocument docx = new XmlDocument();
-            docx.LoadXml(s);
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<Tracker> trackers = new List<Tracker>();
-            foreach (KeyValuePair<int, string> kv in ParseSelect(docx.GetElementById("issue_tracker_id")))
+            foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_tracker_id"))
             {
                 trackers.Add(new Tracker() {Id = kv.Key, Name = kv.Value});
             }
@@ -264,11 +259,9 @@ namespace Nohal.Redmine
         /// <returns>List of all the issue statuses available for the user in selected project</returns>
         public List<Status> GetStatuses(int projectId)
         {
-            string s = this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId)));
-            XmlDocument docx = new XmlDocument();
-            docx.LoadXml(s);
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<Status> statuses = new List<Status>();
-            foreach (KeyValuePair<int, string> kv in ParseSelect(docx.GetElementById("issue_status_id")))
+            foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_status_id"))
             {
                 statuses.Add(new Status() { Id = kv.Key, Name = kv.Value });
             }
@@ -283,11 +276,9 @@ namespace Nohal.Redmine
         /// <returns>List of all the issue priorities available for the user in selected project</returns>
         public List<Priority> GetPriorities(int projectId)
         {
-            string s = this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId)));
-            XmlDocument docx = new XmlDocument();
-            docx.LoadXml(s);
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<Priority> priorities = new List<Priority>();
-            foreach (KeyValuePair<int, string> kv in ParseSelect(docx.GetElementById("issue_priority_id")))
+            foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_priority_id"))
             {
                 priorities.Add(new Priority() { Id = kv.Key, Name = kv.Value });
             }
@@ -302,11 +293,9 @@ namespace Nohal.Redmine
         /// <returns>List of all the users available to be assigned to project issues</returns>
         public List<User> GetAsignees(int projectId)
         {
-            string s = this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId)));
-            XmlDocument docx = new XmlDocument();
-            docx.LoadXml(s);
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<User> users = new List<User>();
-            foreach (KeyValuePair<int, string> kv in ParseSelect(docx.GetElementById("issue_assigned_to_id")))
+            foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_assigned_to_id"))
             {
                 users.Add(new User() { Id = kv.Key, Name = kv.Value });
             }
@@ -342,8 +331,8 @@ namespace Nohal.Redmine
         /// <param name="request">Web request</param>
         /// <param name="method">Request method</param>
         /// <param name="postDataText">URLEncoded text for the post body</param>
-        /// <returns>The response text (HTML or XML)</returns>
-        private string WebRequest(HttpWebRequest request, string method, string postDataText)
+        /// <returns>The response stream</returns>
+        private Stream WebRequest(HttpWebRequest request, string method, string postDataText)
         {
             if (!this.authenticated)
             {
@@ -388,17 +377,14 @@ namespace Nohal.Redmine
             {
                 throw new Exception(String.Format("The request to Redmine URL {0} caused the following exception: {1}.", request.Address, ex.Message));
             }
-            //// Read the raw response from the request
-            StreamReader sr = new StreamReader(httpWResponse.GetResponseStream(), Encoding.ASCII);
-            //// Convert the stream to a string
-            string s = sr.ReadToEnd();
-            sr.Close();
+
             if (this.cookieJar == null)
             {
                 this.cookieJar = new CookieContainer();
                 this.cookieJar.Add(httpWResponse.Cookies);
             }
 
+            Stream s = httpWResponse.GetResponseStream();
             httpWResponse.Close();
             return s;
         }
@@ -407,8 +393,8 @@ namespace Nohal.Redmine
         /// Makes a web request using GET method
         /// </summary>
         /// <param name="requestUri">Requested address</param>
-        /// <returns>The response text (HTML or XML)</returns>
-        private string GetWebRequest(Uri requestUri)
+        /// <returns>The response stream</returns>
+        private Stream GetWebRequest(Uri requestUri)
         {
             return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "GET", String.Empty);
         }
@@ -418,31 +404,10 @@ namespace Nohal.Redmine
         /// </summary>
         /// <param name="requestUri">Requested address</param>
         /// <param name="postDataText">URLEncoded text for the post body</param>
-        /// <returns>The response text (HTML or XML)</returns>
-        private string PostWebRequest(Uri requestUri, string postDataText)
+        /// <returns>The response stream</returns>
+        private Stream PostWebRequest(Uri requestUri, string postDataText)
         {
             return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "POST", postDataText);
-        }
-
-        /// <summary>
-        /// Parses XHTML combobox possible values
-        /// </summary>
-        /// <param name="selectNode">DOM node representing combobox</param>
-        /// <returns>Collection of Key->Value pairs</returns>
-        private List<KeyValuePair<int, string>> ParseSelect(XmlNode selectNode)
-        {
-            List<KeyValuePair<int, string>> parsed = new List<KeyValuePair<int, string>>();
-            if (selectNode != null)
-            {
-                foreach (XmlNode list in selectNode.ChildNodes)
-                {
-                    if (list.Attributes["value"].Value != String.Empty)
-                    {
-                        parsed.Add(new KeyValuePair<int, string>(Convert.ToInt32(list.Attributes["value"].Value), list.InnerText));
-                    }
-                }
-            }
-            return parsed;
         }
 
         /// <summary>
