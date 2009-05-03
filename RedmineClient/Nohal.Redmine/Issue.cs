@@ -7,6 +7,7 @@
 // <summary>Class representing the issue in Redmine.</summary>
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace Nohal.Redmine
 {
@@ -84,6 +85,12 @@ namespace Nohal.Redmine
         /// Users watching this issue
         /// </summary>
         public List<User> Watchers;
+
+        /// <summary>
+        /// Additional issue parameters.
+        /// This property can be used for specifying additional parameters specific for your particular Redmine instance.
+        /// </summary>
+        public NameValueCollection AdditionalParameters { get; set; }
 
         // TODO: File attachments
     }
