@@ -11,6 +11,7 @@ using System.IO;
 using System.Net;
 using System.Security.Authentication;
 using System.Text;
+using System.Web;
 using System.Xml;
 
 namespace Nohal.Redmine
@@ -23,32 +24,32 @@ namespace Nohal.Redmine
         /// <summary>
         /// Relative path to the project list
         /// </summary>
-        private const string ProjectListRelativeUri = "/projects?format=atom";
+        private const string ProjectListRelativeUri = "projects?format=atom";
 
         /// <summary>
         /// Relative path to the login form
         /// </summary>
-        private const string LoginRelativeUri = "/login";
+        private const string LoginRelativeUri = "login";
 
         /// <summary>
         /// Relative path to the list of all the project issues
         /// </summary>
-        private const string IssueListRelativeUri = "/projects/{0}/issues?format=atom&per_page=999999";
+        private const string IssueListRelativeUri = "projects/{0}/issues?format=atom&per_page=999999";
 
         /// <summary>
         /// Relative path to the project settings Information form
         /// </summary>
-        private const string ProjectSettingsInfoUri = "/projects/settings/{0}";
+        private const string ProjectSettingsInfoUri = "projects/settings/{0}";
 
         /// <summary>
         /// Relative path to the new issue form
         /// </summary>
-        private const string NewIssueRelativeUri = "/projects/{0}/issues/new";
+        private const string NewIssueRelativeUri = "projects/{0}/issues/new";
         
         /// <summary>
         /// Relative path to the time logging form
         /// </summary>
-        private const string TimeLogFormRelativeUri = "/projects/{0}/timelog/edit";
+        private const string TimeLogFormRelativeUri = "projects/{0}/timelog/edit";
 
         /// <summary>
         /// Form request for login
@@ -99,7 +100,7 @@ namespace Nohal.Redmine
 
             set
             {
-                this.redmineBaseUri = new Uri(value);
+                this.redmineBaseUri = new Uri(value, UriKind.Absolute);
             }
         }
 
@@ -142,13 +143,12 @@ namespace Nohal.Redmine
         {
             if (!string.IsNullOrEmpty(RedmineUser))
             {
-                Uri uri = new Uri(this.redmineBaseUri, LoginRelativeUri);
                 string requestData = String.Format(LoginRequest,
                                                    System.Web.HttpUtility.UrlEncode(
-                                                       new Uri(redmineBaseUri, ProjectListRelativeUri).ToString()),
+                                                       ConstructUri(ProjectListRelativeUri).ToString()),
                                                    System.Web.HttpUtility.UrlEncode(this.RedmineUser),
                                                    System.Web.HttpUtility.UrlEncode(this.RedminePassword));
-                string s = this.PostWebRequest(uri, requestData);
+                string s = this.PostWebRequest(ConstructUri(LoginRelativeUri), requestData);
                 XmlDocument xml = new XmlDocument();
                 xml.LoadXml(s);
 
@@ -184,8 +184,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the projects available to the user</returns>
         public List<Project> GetProjects()
         {
-            Uri uri = new Uri(this.redmineBaseUri, ProjectListRelativeUri);
-            string s = this.GetWebRequest(uri);
+            string s = this.GetWebRequest(ConstructUri(ProjectListRelativeUri));
             List<Project> projects = new List<Project>();
             foreach (AtomEntry entry in AtomParser.ParseFeed(s))
             {
@@ -206,8 +205,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the available issues for the project</returns>
         public List<Issue> GetIssues(int projectId)
         {
-            Uri uri = new Uri(this.redmineBaseUri, String.Format(IssueListRelativeUri, projectId));
-            string s = this.GetWebRequest(uri);
+            string s = this.GetWebRequest(ConstructUri(String.Format(IssueListRelativeUri, projectId)));
             List<Issue> issues = new List<Issue>();
             foreach (AtomEntry entry in AtomParser.ParseFeed(s))
             {
@@ -228,8 +226,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the activities available for the user</returns>
         public List<Activity> GetActivities(int projectId)
         {
-            Uri uri = new Uri(this.redmineBaseUri, String.Format(TimeLogFormRelativeUri, projectId));
-            string s = this.GetWebRequest(uri);
+            string s = this.GetWebRequest(ConstructUri(String.Format(TimeLogFormRelativeUri, projectId)));
             XmlDocument docx = new XmlDocument();
             docx.LoadXml(s);
             List<Activity> activities = new List<Activity>();
@@ -248,8 +245,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the trackers available for the user in selected project</returns>
         public List<Tracker> GetTrackers(int projectId)
         {
-            Uri uri = new Uri(this.redmineBaseUri, String.Format(NewIssueRelativeUri, projectId));
-            string s = this.GetWebRequest(uri);
+            string s = this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId)));
             XmlDocument docx = new XmlDocument();
             docx.LoadXml(s);
             List<Tracker> trackers = new List<Tracker>();
@@ -268,8 +264,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the issue statuses available for the user in selected project</returns>
         public List<Status> GetStatuses(int projectId)
         {
-            Uri uri = new Uri(this.redmineBaseUri, String.Format(NewIssueRelativeUri, projectId));
-            string s = this.GetWebRequest(uri);
+            string s = this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId)));
             XmlDocument docx = new XmlDocument();
             docx.LoadXml(s);
             List<Status> statuses = new List<Status>();
@@ -288,8 +283,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the issue priorities available for the user in selected project</returns>
         public List<Priority> GetPriorities(int projectId)
         {
-            Uri uri = new Uri(this.redmineBaseUri, String.Format(NewIssueRelativeUri, projectId));
-            string s = this.GetWebRequest(uri);
+            string s = this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId)));
             XmlDocument docx = new XmlDocument();
             docx.LoadXml(s);
             List<Priority> priorities = new List<Priority>();
@@ -308,8 +302,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the users available to be assigned to project issues</returns>
         public List<User> GetAsignees(int projectId)
         {
-            Uri uri = new Uri(this.redmineBaseUri, String.Format(NewIssueRelativeUri, projectId));
-            string s = this.GetWebRequest(uri);
+            string s = this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId)));
             XmlDocument docx = new XmlDocument();
             docx.LoadXml(s);
             List<User> users = new List<User>();
@@ -332,7 +325,6 @@ namespace Nohal.Redmine
         /// <param name="activityId">Activity Id</param>
         public void LogTimeForIssue(int projectId, int issueId, string description, double timeSpent, DateTime date, int activityId)
         {
-            Uri uri = new Uri(this.redmineBaseUri, String.Format(TimeLogFormRelativeUri, projectId));
             string requestData = String.Format(TimeLogRequest,
                                                System.Web.HttpUtility.UrlEncode(
                                                    new Uri(redmineBaseUri, TimeLogFormRelativeUri).ToString()),
@@ -341,7 +333,7 @@ namespace Nohal.Redmine
                                                System.Web.HttpUtility.UrlEncode(String.Format("{0:0.##}", timeSpent)),
                                                System.Web.HttpUtility.UrlEncode(description),
                                                System.Web.HttpUtility.UrlEncode(activityId.ToString()));
-            this.PostWebRequest(uri, requestData);
+            this.PostWebRequest(ConstructUri(String.Format(TimeLogFormRelativeUri, projectId)), requestData);
         }
 
         /// <summary>
@@ -387,7 +379,15 @@ namespace Nohal.Redmine
                 tempStream.Close();
             }
 
-            HttpWebResponse httpWResponse = (HttpWebResponse)request.GetResponse();
+            HttpWebResponse httpWResponse;
+            try
+            {
+                httpWResponse = (HttpWebResponse)request.GetResponse();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(String.Format("The request to Redmine URL {0} caused the following exception: {1}.", request.Address, ex.Message));
+            }
             //// Read the raw response from the request
             StreamReader sr = new StreamReader(httpWResponse.GetResponseStream(), Encoding.ASCII);
             //// Convert the stream to a string
@@ -443,6 +443,19 @@ namespace Nohal.Redmine
                 }
             }
             return parsed;
+        }
+
+        /// <summary>
+        /// Constructs the complete URL and tries to eliminate all the possible causes for Uri to fail.
+        /// </summary>
+        /// <param name="redmineRelativeUri">relative Uri of the Redmine object</param>
+        /// <returns>Uri of the redmine page</returns>
+        private Uri ConstructUri(string redmineRelativeUri)
+        {
+            string relativepath;
+            relativepath = VirtualPathUtility.AppendTrailingSlash(redmineBaseUri.AbsolutePath);
+            UriBuilder ub = new UriBuilder(this.redmineBaseUri.Scheme, redmineBaseUri.Host, redmineBaseUri.Port, relativepath);
+            return new Uri(ub.Uri + redmineRelativeUri);
         }
     }
 }
