@@ -36,9 +36,11 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AboutBox.cs">
@@ -48,6 +50,12 @@
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
     <Compile Include="FormData.cs" />
+    <Compile Include="NewIssueForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewIssueForm.Designer.cs">
+      <DependentUpon>NewIssueForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="RedmineClientForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -58,6 +66,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NewIssueForm.resx">
+      <DependentUpon>NewIssueForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="RedmineClientForm.resx">
       <DependentUpon>RedmineClientForm.cs</DependentUpon>

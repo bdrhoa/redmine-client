@@ -46,6 +46,7 @@ namespace Nohal.Redmine.Client
             this.Cursor = Cursors.AppStarting;
             this.BtnCommitButton.Enabled = false;
             this.BtnRefreshButton.Enabled = false;
+            this.BtnNewIssueButton.Enabled = false;
             backgroundWorker1.RunWorkerAsync(0);
         }
 
@@ -70,11 +71,21 @@ namespace Nohal.Redmine.Client
             if (data.Projects.Count == 0 || data.Issues.Count == 0 || data.Activities.Count == 0)
             {
                 BtnCommitButton.Enabled = false;
+                if (data.Projects.Count > 0)
+                {
+                    BtnNewIssueButton.Enabled = true;    
+                }
+                else
+                {
+                    BtnNewIssueButton.Enabled = false;
+                }
+                
                 BtnRefreshButton.Enabled = true;
             }
             else
             {
                 BtnCommitButton.Enabled = true;
+                BtnNewIssueButton.Enabled = true;
                 BtnRefreshButton.Enabled = true;
             }
             ComboBoxProject.DataSource = data.Projects;
@@ -85,10 +96,14 @@ namespace Nohal.Redmine.Client
             ComboBoxActivity.DisplayMember = "Description";
             ComboBoxActivity.ValueMember = "Id";
 
-            BindingSource bnd = new BindingSource();
-            bnd.DataSource = data.Issues;
-            DataGridViewIssues.AutoGenerateColumns = true;
-            DataGridViewIssues.DataSource = bnd;
+            DataGridViewIssues.DataSource = data.Issues;
+            foreach (DataGridViewColumn column in DataGridViewIssues.Columns)
+            {
+                if (column.Name != "Id" && column.Name != "Subject")
+                {
+                    column.Visible = false;
+                }
+            }
             DataGridViewIssues.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
             if (DataGridViewIssues.Columns.Count > 0)
             {
@@ -444,5 +459,15 @@ namespace Nohal.Redmine.Client
             }
             this.Cursor = Cursors.Default;
         }
+
+        private void BtnNewIssueButton_Click(object sender, EventArgs e)
+        {
+            NewIssueForm dlg = new NewIssueForm();
+            if (dlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+            {
+                MessageBox.Show("Adding issues to Redmine not yet implemented.");
+            }
+        }
+
     }
 }

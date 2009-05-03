@@ -55,6 +55,7 @@ namespace Nohal.Redmine.Client
             this.BtnAboutButton = new System.Windows.Forms.Button();
             this.BtnSettingsButton = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.BtnNewIssueButton = new System.Windows.Forms.Button();
             this.NotifyIconMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridViewIssues)).BeginInit();
             this.SuspendLayout();
@@ -270,11 +271,22 @@ namespace Nohal.Redmine.Client
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
             // 
+            // BtnNewIssueButton
+            // 
+            this.BtnNewIssueButton.Location = new System.Drawing.Point(544, 115);
+            this.BtnNewIssueButton.Name = "BtnNewIssueButton";
+            this.BtnNewIssueButton.Size = new System.Drawing.Size(75, 23);
+            this.BtnNewIssueButton.TabIndex = 22;
+            this.BtnNewIssueButton.Text = "New issue";
+            this.BtnNewIssueButton.UseVisualStyleBackColor = true;
+            this.BtnNewIssueButton.Click += new System.EventHandler(this.BtnNewIssueButton_Click);
+            // 
             // RedmineClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(627, 501);
+            this.Controls.Add(this.BtnNewIssueButton);
             this.Controls.Add(this.BtnSettingsButton);
             this.Controls.Add(this.BtnAboutButton);
             this.Controls.Add(this.BtnResetButton);
@@ -332,6 +344,7 @@ namespace Nohal.Redmine.Client
         private Button BtnAboutButton;
         private Button BtnSettingsButton;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private Button BtnNewIssueButton;
     }
 }
 
