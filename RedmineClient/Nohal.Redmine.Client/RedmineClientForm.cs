@@ -404,6 +404,11 @@ namespace Nohal.Redmine.Client
                     redmine.RedmineUser = RedmineUser;
                     redmine.RedminePassword = RedminePassword;
                 }
+                else
+                {
+                    redmine.RedmineUser = String.Empty;
+                    redmine.RedminePassword = String.Empty;
+                }
                 
                 try
                 {

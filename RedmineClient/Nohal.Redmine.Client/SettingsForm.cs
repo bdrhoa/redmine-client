@@ -26,6 +26,14 @@ namespace Nohal.Redmine.Client
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
+            Uri uri;
+            if (!Uri.TryCreate(RedmineBaseUrlTextBox.Text, UriKind.Absolute, out uri))
+            {
+                MessageBox.Show("Invalid URL of Redmine installation.", "Error", MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                this.RedmineBaseUrlTextBox.Focus();
+                return;
+            }
             SaveConfig();
             this.DialogResult = DialogResult.OK;
             this.Close();
