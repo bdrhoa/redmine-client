@@ -5,6 +5,9 @@
 // <email>pavel@kalian.cz</email>
 // <date>2009-04-27</date>
 // <summary>Class representing the issue in Redmine.</summary>
+using System;
+using System.Collections.Generic;
+
 namespace Nohal.Redmine
 {
     /// <summary>
@@ -21,5 +24,67 @@ namespace Nohal.Redmine
         /// Gets or sets the issue subject text
         /// </summary>
         public string Subject { get; set; }
+
+        /// <summary>
+        /// Gets or sets ID of the issue tracker
+        /// </summary>
+        public int TrackerId { get; set; }
+
+        /// <summary>
+        /// Gets or sets Description of the issue
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets ID of the issue status
+        /// </summary>
+        public int StatusId { get; set; }
+
+        /// <summary>
+        /// Gets or sets ID of the issue priority
+        /// </summary>
+        public int PriorityId { get; set; }
+
+        /// <summary>
+        /// Gets or sets ID of the assigned user
+        /// </summary>
+        public int AssignedTo { get; set; }
+
+        /// <summary>
+        /// Gets or sets Start date of the issue
+        /// </summary>
+        public DateTime Start { get; set; }
+
+        /// <summary>
+        /// Gets or sets Due date of the issue
+        /// </summary>
+        public DateTime DueDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets Estimated time for completing the issue
+        /// </summary>
+        public double EstimatedTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets Percentual value of the issue completion
+        /// </summary>
+        public int PercentDone { get; set; }
+
+        /// <summary>
+        /// Gets or sets ID of the version the issue targets
+        /// </summary>
+        public int TargetVersionId { get; set; }
+
+        /// <summary>
+        /// List of related issues
+        /// </summary>
+        public Dictionary<int, IssueRelationType> RelatedIssues;
+
+        /// <summary>
+        /// Users watching this issue
+        /// </summary>
+        public List<User> Watchers;
+
+        // TODO: File attachments
     }
 }

@@ -145,10 +145,10 @@ namespace Nohal.Redmine
             {
                 string requestData = String.Format(LoginRequest,
                                                    System.Web.HttpUtility.UrlEncode(
-                                                       ConstructUri(ProjectListRelativeUri).ToString()),
+                                                       this.ConstructUri(ProjectListRelativeUri).ToString()),
                                                    System.Web.HttpUtility.UrlEncode(this.RedmineUser),
                                                    System.Web.HttpUtility.UrlEncode(this.RedminePassword));
-                XhtmlPage page = new XhtmlPage(this.PostWebRequest(ConstructUri(LoginRelativeUri), requestData));
+                XhtmlPage page = new XhtmlPage(this.PostWebRequest(this.ConstructUri(LoginRelativeUri), requestData));
 
                 // if we get a feed with projects, we assume that we are successfully authenticated
                 // if we do get xhtml, it's the login form again
@@ -182,7 +182,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the projects available to the user</returns>
         public List<Project> GetProjects()
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(ConstructUri(ProjectListRelativeUri)));
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(ProjectListRelativeUri)));
             List<Project> projects = new List<Project>();
             foreach (AtomEntry entry in AtomParser.ParseFeed(page.XmlDocument))
             {
@@ -203,7 +203,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the available issues for the project</returns>
         public List<Issue> GetIssues(int projectId)
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(ConstructUri(String.Format(IssueListRelativeUri, projectId))));
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(IssueListRelativeUri, projectId))));
             List<Issue> issues = new List<Issue>();
             foreach (AtomEntry entry in AtomParser.ParseFeed(page.XmlDocument))
             {
@@ -224,7 +224,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the activities available for the user</returns>
         public List<Activity> GetActivities(int projectId)
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(ConstructUri(String.Format(TimeLogFormRelativeUri, projectId))));
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(TimeLogFormRelativeUri, projectId))));
 
             List<Activity> activities = new List<Activity>();
             foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("time_entry_activity_id"))
@@ -242,7 +242,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the trackers available for the user in selected project</returns>
         public List<Tracker> GetTrackers(int projectId)
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<Tracker> trackers = new List<Tracker>();
             foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_tracker_id"))
             {
@@ -259,7 +259,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the issue statuses available for the user in selected project</returns>
         public List<Status> GetStatuses(int projectId)
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<Status> statuses = new List<Status>();
             foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_status_id"))
             {
@@ -276,7 +276,7 @@ namespace Nohal.Redmine
         /// <returns>List of all the issue priorities available for the user in selected project</returns>
         public List<Priority> GetPriorities(int projectId)
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<Priority> priorities = new List<Priority>();
             foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_priority_id"))
             {
@@ -287,13 +287,47 @@ namespace Nohal.Redmine
         }
 
         /// <summary>
+        /// Gets the list of all versions project issue can target
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <returns>List of all the versions available for the user in selected project</returns>
+        public List<Version> GetVersions(int projectId)
+        {
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
+            List<Version> versions = new List<Version>();
+            foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_fixed_version_id"))
+            {
+                versions.Add(new Version() { Id = kv.Key, Name = kv.Value });
+            }
+
+            return versions;
+        }
+
+        /// <summary>
+        /// Gets the list of all the users available as watchers for the project
+        /// </summary>
+        /// <param name="projectId">ID of the project</param>
+        /// <returns>List of all the users available as watchers for the project</returns>
+        public List<User> GetWatchers(int projectId)
+        {
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
+            List<User> watchers = new List<User>();
+            foreach (KeyValuePair<int, string> kv in page.GetCheckBoxOptions("issue[watcher_user_ids][]"))
+            {
+                watchers.Add(new User() { Id = kv.Key, Name = kv.Value });
+            }
+
+            return watchers;
+        }
+
+        /// <summary>
         /// Gets the list of all users available to be assigned to project issue
         /// </summary>
         /// <param name="projectId">Project Id</param>
         /// <returns>List of all the users available to be assigned to project issues</returns>
         public List<User> GetAsignees(int projectId)
         {
-            XhtmlPage page = new XhtmlPage(this.GetWebRequest(ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
+            XhtmlPage page = new XhtmlPage(this.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<User> users = new List<User>();
             foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_assigned_to_id"))
             {
@@ -322,7 +356,7 @@ namespace Nohal.Redmine
                                                System.Web.HttpUtility.UrlEncode(String.Format("{0:0.##}", timeSpent)),
                                                System.Web.HttpUtility.UrlEncode(description),
                                                System.Web.HttpUtility.UrlEncode(activityId.ToString()));
-            this.PostWebRequest(ConstructUri(String.Format(TimeLogFormRelativeUri, projectId)), requestData);
+            this.PostWebRequest(this.ConstructUri(String.Format(TimeLogFormRelativeUri, projectId)), requestData);
         }
 
         /// <summary>

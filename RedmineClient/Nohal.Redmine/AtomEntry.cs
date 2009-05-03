@@ -31,7 +31,7 @@ namespace Nohal.Redmine
         {
             get
             {
-                return Convert.ToInt32(Id.Substring(Id.LastIndexOf('/') + 1));
+                return Convert.ToInt32(this.Id.Substring(this.Id.LastIndexOf('/') + 1));
             }
         }
     }

@@ -23,50 +23,82 @@ namespace Nohal.Redmine
         private XmlDocument xml;
 
         /// <summary>
+        /// Constructor
+        /// </summary>
+        internal XhtmlPage()
+        {
+            this.xml = new XmlDocument();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the XhtmlPage class.
+        /// Creates object from the supplied text.
+        /// </summary>
+        /// <param name="pageContent">Text of the page</param>
+        internal XhtmlPage(string pageContent) : this()
+        {
+            this.xml.LoadXml(pageContent);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the XhtmlPage class.
+        /// Creates object from the supplied stream.
+        /// </summary>
+        /// <param name="pageContent">Stream providing the text of the page</param>
+        internal XhtmlPage(Stream pageContent) : this()
+        {
+            this.xml.Load(pageContent);
+        }
+
+        /// <summary>
         /// Gets the page XmlDocument
         /// </summary>
         internal XmlDocument XmlDocument
         {
             get
             {
-                return xml;
+                return this.xml;
             }
         }
 
         /// <summary>
-        /// Constructor
-        /// </summary>
-        private XhtmlPage()
-        {
-            this.xml = new XmlDocument();
-        }
-
-        /// <summary>
-        /// Creates object from the text
-        /// </summary>
-        /// <param name="pageContent">Text of the page</param>
-        internal XhtmlPage(string pageContent) : this()
-        {
-            xml.LoadXml(pageContent);
-        }
-
-        /// <summary>
-        /// Creates object from the text
-        /// </summary>
-        /// <param name="pageContent">Stream providing the text of the page</param>
-        internal XhtmlPage(Stream pageContent) : this()
-        {
-            xml.Load(pageContent);
-        }
-
-        /// <summary>
-        /// Gets the System.Xml.XmlElement with the specified ID
+        /// Gets the System.Xml.XmlNode with the specified ID
         /// </summary>
         /// <param name="elementId">The element ID to match</param>
         /// <returns>Matching System.Xml.XmlNode</returns>
         internal XmlNode GetElementById(string elementId)
         {
-            return xml.GetElementById(elementId);
+            return this.xml.GetElementById(elementId);
+        }
+
+        /// <summary>
+        /// Gets the System.Xml.XmlNodeList of nodes with the specified name
+        /// </summary>
+        /// <param name="elementsXPath>The elements XPath to match</param>
+        /// <returns>Matching System.Xml.XmlNodeList</returns>
+        private XmlNodeList GetElementsByName(string elementName)
+        {
+            return this.xml.GetElementsByTagName(elementName);
+        }
+
+        /// <summary>
+        /// Gets the collection of possible values from the checkboxes contained in XmlNodeList.
+        /// The expected xhtml is for example: &lt;label class="floating" &gt;&lt;input id="issue[watcher_user_ids][]"  name="issue[watcher_user_ids][]"  type="checkbox"  value="3" /&gt; test user&lt;/label&gt;
+        /// </summary>
+        /// <param name="checkboxId">Id of the checkboxes</param>
+        /// <returns>collection of key->value pairs</returns>
+        internal Dictionary<int, string> GetCheckBoxOptions(string checkboxId)
+        {
+            Dictionary<int, string> dict = new Dictionary<int, string>();
+            foreach (XmlNode node in this.GetElementsByName("input"))
+            {
+                if (node.Attributes["type"].Value == "checkbox" && node.Attributes["id"].Value == checkboxId)
+                {
+                    dict.Add(Convert.ToInt32(node.Attributes["value"].Value), node.ParentNode.InnerText.Trim());   
+                }
+            }
+
+            return dict;
         }
 
         /// <summary>
@@ -74,9 +106,9 @@ namespace Nohal.Redmine
         /// </summary>
         /// <param name="selectId">ID of the select element in the page</param>
         /// <returns>collection of key->value pairs</returns>
-        internal List<KeyValuePair<int, string>> GetSelectOptions(string selectId)
+        internal Dictionary<int, string> GetSelectOptions(string selectId)
         {
-            return ParseSelect(GetElementById(selectId));
+            return this.ParseSelect(this.GetElementById(selectId));
         }
 
         /// <summary>
@@ -84,16 +116,16 @@ namespace Nohal.Redmine
         /// </summary>
         /// <param name="selectNode">DOM node representing combobox</param>
         /// <returns>Collection of Key->Value pairs</returns>
-        private List<KeyValuePair<int, string>> ParseSelect(XmlNode selectNode)
+        private Dictionary<int, string> ParseSelect(XmlNode selectNode)
         {
-            List<KeyValuePair<int, string>> parsed = new List<KeyValuePair<int, string>>();
+            Dictionary<int, string> parsed = new Dictionary<int, string>();
             if (selectNode != null)
             {
                 foreach (XmlNode list in selectNode.ChildNodes)
                 {
                     if (list.Attributes["value"].Value != String.Empty)
                     {
-                        parsed.Add(new KeyValuePair<int, string>(Convert.ToInt32(list.Attributes["value"].Value), list.InnerText));
+                        parsed.Add(Convert.ToInt32(list.Attributes["value"].Value), list.InnerText);
                     }
                 }
             }

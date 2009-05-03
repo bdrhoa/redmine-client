@@ -43,6 +43,7 @@
     <Compile Include="AtomEntry.cs" />
     <Compile Include="AtomParser.cs" />
     <Compile Include="Issue.cs" />
+    <Compile Include="IssueRelationType.cs" />
     <Compile Include="Priority.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -50,6 +51,7 @@
     <Compile Include="Status.cs" />
     <Compile Include="Tracker.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="Version.cs" />
     <Compile Include="XhtmlPage.cs" />
   </ItemGroup>
   <ItemGroup>

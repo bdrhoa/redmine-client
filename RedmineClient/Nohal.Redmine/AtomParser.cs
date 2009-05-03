@@ -26,7 +26,6 @@ namespace Nohal.Redmine
             XmlNamespaceManager nsmgr = new XmlNamespaceManager(feedXml.NameTable);
             nsmgr.AddNamespace("atom", "http://www.w3.org/2005/Atom");
 
-
             // successful
             if (feedXml.DocumentElement != null)
             {
