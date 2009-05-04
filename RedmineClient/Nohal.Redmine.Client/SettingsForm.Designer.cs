@@ -37,6 +37,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.RedminePasswordTextBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.CheckForUpdatesCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -120,6 +121,16 @@
             this.label3.TabIndex = 7;
             this.label3.Text = "Redmine password";
             // 
+            // CheckForUpdatesCheckBox
+            // 
+            this.CheckForUpdatesCheckBox.AutoSize = true;
+            this.CheckForUpdatesCheckBox.Location = new System.Drawing.Point(15, 129);
+            this.CheckForUpdatesCheckBox.Name = "CheckForUpdatesCheckBox";
+            this.CheckForUpdatesCheckBox.Size = new System.Drawing.Size(210, 21);
+            this.CheckForUpdatesCheckBox.TabIndex = 9;
+            this.CheckForUpdatesCheckBox.Text = "Check for updates on startup";
+            this.CheckForUpdatesCheckBox.UseVisualStyleBackColor = true;
+            // 
             // SettingsForm
             // 
             this.AcceptButton = this.BtnSaveButton;
@@ -127,6 +138,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.BtnCancelButton;
             this.ClientSize = new System.Drawing.Size(580, 348);
+            this.Controls.Add(this.CheckForUpdatesCheckBox);
             this.Controls.Add(this.RedminePasswordTextBox);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.RedmineUsernameTextBox);
@@ -155,5 +167,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox RedminePasswordTextBox;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox CheckForUpdatesCheckBox;
     }
 }

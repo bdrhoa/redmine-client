@@ -22,6 +22,8 @@ namespace Nohal.Redmine.Client
         private string RedmineUser;
         private string RedminePassword;
 
+        private bool CheckForUpdates;
+
         public RedmineClientForm()
         {
             InitializeComponent();
@@ -47,6 +49,15 @@ namespace Nohal.Redmine.Client
             this.BtnCommitButton.Enabled = false;
             this.BtnRefreshButton.Enabled = false;
             this.BtnNewIssueButton.Enabled = false;
+            string latestVersionUrl = Utility.CheckForUpdate();
+            if (latestVersionUrl != String.Empty)
+            {
+                if (MessageBox.Show("New version available. Do you want me to take you to the download location?",
+                                "New version", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    System.Diagnostics.Process.Start(latestVersionUrl);
+                }
+            }
             backgroundWorker1.RunWorkerAsync(0);
         }
 
@@ -136,6 +147,7 @@ namespace Nohal.Redmine.Client
             RedmineAuthentication = Convert.ToBoolean(ConfigurationManager.AppSettings["RedmineAuthentication"]);
             RedmineUser = ConfigurationManager.AppSettings["RedmineUser"];
             RedminePassword = ConfigurationManager.AppSettings["RedminePassword"];
+            CheckForUpdates = Convert.ToBoolean(ConfigurationManager.AppSettings["CheckForUpdates"]);
         }
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
