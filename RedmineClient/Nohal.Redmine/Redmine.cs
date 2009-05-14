@@ -40,7 +40,7 @@ namespace Nohal.Redmine
         /// <summary>
         /// Relative path to the list of the recent activities
         /// </summary>
-        private const string RecentActivitiesRelativeUri = "projects/activity/{0}?format=atom&show_changesets={1}&show_documents={2}&show_files={3}&show_issues={4}&show_messages={5}&show_news={6}&show_wiki_edits={7}&per_page=999999";
+        private const string RecentActivitiesRelativeUri = "projects/activity/{0}?format=atom&per_page=999999{1}";
 
         /// <summary>
         /// Relative path to the project settings Information form
@@ -361,36 +361,35 @@ namespace Nohal.Redmine
         /// </returns>
         public List<ProjectActivity> GetRecentActivity(int projectId, params RecentActivityType[] activityTypes)
         {
-            byte show_issues, show_changesets, show_news, show_documents, show_files, show_wiki_edits, show_messages;
-            show_issues = show_changesets = show_news = show_documents = show_files = show_wiki_edits = show_messages = 0;
+            StringBuilder sb = new StringBuilder();
             foreach (RecentActivityType activityType in activityTypes)
             {
                 switch (activityType)
                 {
                     case RecentActivityType.Issues:
-                        show_issues = 1;
+                        sb.Append("&show_issues=1");
                         break;
                     case RecentActivityType.Changesets:
-                        show_changesets = 1;
+                        sb.Append("&show_changesets=1");
                         break;
                     case RecentActivityType.News:
-                        show_news = 1;
+                        sb.Append("&show_news=1");
                         break;
                     case RecentActivityType.Documents:
-                        show_documents = 1;
+                        sb.Append("&show_documents=1");
                         break;
                     case RecentActivityType.Files:
-                        show_files = 1;
+                        sb.Append("&show_files=1");
                         break;
                     case RecentActivityType.WikiEdits:
-                        show_wiki_edits = 1;
+                        sb.Append("&show_wiki_edits=1");
                         break;
                     case RecentActivityType.Messages:
-                        show_messages = 1;
+                        sb.Append("&show_messages=1");
                         break;
                 }
             }
-            XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(RecentActivitiesRelativeUri, projectId, show_issues, show_changesets, show_news, show_documents, show_files, show_wiki_edits, show_messages))));
+            XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(RecentActivitiesRelativeUri, projectId, sb))));
             List<ProjectActivity> activities = new List<ProjectActivity>();
             foreach (AtomEntry entry in AtomParser.ParseFeed(page.XmlDocument))
             {
