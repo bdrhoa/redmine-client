@@ -31,17 +31,26 @@ namespace Nohal.Redmine
             {
                 XmlNodeList titles = feedXml.DocumentElement.SelectNodes("//atom:entry/atom:title", nsmgr);
                 XmlNodeList ids = feedXml.DocumentElement.SelectNodes("//atom:entry/atom:id", nsmgr);
+                XmlNodeList updates = feedXml.DocumentElement.SelectNodes("//atom:entry/atom:updated", nsmgr);
+                XmlNodeList contents = feedXml.DocumentElement.SelectNodes("//atom:entry/atom:content", nsmgr);
+                XmlNodeList authornames = feedXml.DocumentElement.SelectNodes("//atom:entry/atom:author/atom:name", nsmgr);
+                XmlNodeList authoremails = feedXml.DocumentElement.SelectNodes("//atom:entry/atom:author/atom:email", nsmgr);
 
                 List<AtomEntry> entries = new List<AtomEntry>();
 
-                if (titles != null && ids != null && ids.Count == titles.Count)
+                if (titles != null && ids != null && contents != null && updates != null && authornames != null && authoremails != null && ids.Count == titles.Count && titles.Count == updates.Count && updates.Count == contents.Count && contents.Count == authornames.Count && authornames.Count == authoremails.Count)
                 {
                     for (int i = 0; i < titles.Count; i++)
                     {
                         entries.Add(new AtomEntry()
                                         {
                                             Id = ids[i].InnerText,
-                                            Title = titles[i].InnerText
+                                            Title = titles[i].InnerText,
+                                            Content = contents[i].InnerText,
+                                            Updated = updates[i].InnerText,
+                                            Author =
+                                                new AtomEntry.AtomAuthor()
+                                                    {Name = authornames[i].InnerText, Email = authoremails[i].InnerText}
                                         });
                     }
                 }

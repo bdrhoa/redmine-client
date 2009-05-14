@@ -23,7 +23,7 @@ namespace Nohal.Redmine
         private XmlDocument xml;
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the XhtmlPage class.
         /// </summary>
         internal XhtmlPage()
         {
@@ -72,16 +72,6 @@ namespace Nohal.Redmine
         }
 
         /// <summary>
-        /// Gets the System.Xml.XmlNodeList of nodes with the specified name
-        /// </summary>
-        /// <param name="elementsXPath>The elements XPath to match</param>
-        /// <returns>Matching System.Xml.XmlNodeList</returns>
-        private XmlNodeList GetElementsByName(string elementName)
-        {
-            return this.xml.GetElementsByTagName(elementName);
-        }
-
-        /// <summary>
         /// Gets the collection of possible values from the checkboxes contained in XmlNodeList.
         /// The expected xhtml is for example: &lt;label class="floating" &gt;&lt;input id="issue[watcher_user_ids][]"  name="issue[watcher_user_ids][]"  type="checkbox"  value="3" /&gt; test user&lt;/label&gt;
         /// </summary>
@@ -112,6 +102,16 @@ namespace Nohal.Redmine
         }
 
         /// <summary>
+        /// Gets the System.Xml.XmlNodeList of nodes with the specified name
+        /// </summary>
+        /// <param name="elementName>name of the element</param>
+        /// <returns>Matching System.Xml.XmlNodeList</returns>
+        private XmlNodeList GetElementsByName(string elementName)
+        {
+            return this.xml.GetElementsByTagName(elementName);
+        }
+
+        /// <summary>
         /// Parses possible values of XHTML select into a collection of key->value pairs
         /// </summary>
         /// <param name="selectNode">DOM node representing combobox</param>
@@ -129,6 +129,7 @@ namespace Nohal.Redmine
                     }
                 }
             }
+
             return parsed;
         }
     }

@@ -25,6 +25,61 @@ namespace Nohal.Redmine
         private CookieContainer cookieJar;
 
         /// <summary>
+        /// Makes a web request using GET method
+        /// </summary>
+        /// <param name="requestUri">Requested address</param>
+        /// <returns>The response text</returns>
+        internal string GetWebRequest(Uri requestUri)
+        {
+            return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "GET", String.Empty);
+        }
+
+        /// <summary>
+        /// Makes a web request using POST method
+        /// </summary>
+        /// <param name="requestUri">Requested address</param>
+        /// <param name="postDataText">URLEncoded text for the post body</param>
+        /// <returns>The response text</returns>
+        internal string PostWebRequest(Uri requestUri, string postDataText)
+        {
+            return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "POST", postDataText);
+        }
+
+        /// <summary>
+        /// Builds a query string from a collection of parameters
+        /// </summary>
+        /// <param name="parametersCollection">Collection of the parameters</param>
+        /// <returns>The HTTP query string</returns>
+        internal string CreateQueryString(NameValueCollection parametersCollection)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < parametersCollection.Count; i++)
+            {
+                this.EncodeAndAddItem(ref sb, parametersCollection.GetKey(i), parametersCollection[i]);
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Encodes and adds a parameter to the query string
+        /// </summary>
+        /// <param name="sb">StringBuilder building query string</param>
+        /// <param name="key">parameter name</param>
+        /// <param name="value">parameter value</param>
+        private void EncodeAndAddItem(ref StringBuilder sb, string key, string value)
+        {
+            if (sb.Length == 0)
+            {
+                String.Format("{0}={1}", key, HttpUtility.UrlEncode(value));  
+            }
+            else
+            {
+                String.Format("&{0}={1}", key, HttpUtility.UrlEncode(value));
+            }
+        }
+
+        /// <summary>
         /// Makes a web request
         /// </summary>
         /// <param name="request">Web request</param>
@@ -37,6 +92,7 @@ namespace Nohal.Redmine
             {
                 this.cookieJar = new CookieContainer();
             }
+
             request.CookieContainer = this.cookieJar;
 
             request.UserAgent = "Nohal.Redmine";
@@ -83,60 +139,6 @@ namespace Nohal.Redmine
             string s = sr.ReadToEnd();
             httpWResponse.Close();
             return s;
-        }
-
-        /// <summary>
-        /// Makes a web request using GET method
-        /// </summary>
-        /// <param name="requestUri">Requested address</param>
-        /// <returns>The response text</returns>
-        internal string GetWebRequest(Uri requestUri)
-        {
-            return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "GET", String.Empty);
-        }
-
-        /// <summary>
-        /// Makes a web request using POST method
-        /// </summary>
-        /// <param name="requestUri">Requested address</param>
-        /// <param name="postDataText">URLEncoded text for the post body</param>
-        /// <returns>The response text</returns>
-        internal string PostWebRequest(Uri requestUri, string postDataText)
-        {
-            return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "POST", postDataText);
-        }
-
-        /// <summary>
-        /// Builds a query string from a collection of parameters
-        /// </summary>
-        /// <param name="parametersCollection">Collection of the parameters</param>
-        /// <returns>The HTTP query string</returns>
-        internal string CreateQueryString(NameValueCollection parametersCollection)
-        {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < parametersCollection.Count; i++)
-            {
-                EncodeAndAddItem(ref sb, parametersCollection.GetKey(i), parametersCollection[i]);
-            }
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Encodes and adds a parameter to the query string
-        /// </summary>
-        /// <param name="sb">StringBuilder building query string</param>
-        /// <param name="key">parameter name</param>
-        /// <param name="value">parameter value</param>
-        private void EncodeAndAddItem(ref StringBuilder sb, string key, string value)
-        {
-            if (sb.Length == 0)
-            {
-                String.Format("{0}={1}", key, HttpUtility.UrlEncode(value));  
-            }
-            else
-            {
-                String.Format("&{0}={1}", key, HttpUtility.UrlEncode(value));
-            }
         }
     }
 }

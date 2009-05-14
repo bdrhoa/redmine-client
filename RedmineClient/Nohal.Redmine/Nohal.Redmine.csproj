@@ -47,7 +47,9 @@
     <Compile Include="IssueRelationType.cs" />
     <Compile Include="Priority.cs" />
     <Compile Include="Project.cs" />
+    <Compile Include="ProjectActivity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RecentActivityType.cs" />
     <Compile Include="Redmine.cs" />
     <Compile Include="Status.cs" />
     <Compile Include="Tracker.cs" />

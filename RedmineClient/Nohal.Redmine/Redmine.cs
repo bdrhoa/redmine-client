@@ -38,6 +38,11 @@ namespace Nohal.Redmine
         private const string IssueListRelativeUri = "projects/{0}/issues?format=atom&per_page=999999";
 
         /// <summary>
+        /// Relative path to the list of the recent activities
+        /// </summary>
+        private const string RecentActivitiesRelativeUri = "projects/activity/{0}?format=atom&show_changesets={1}&show_documents={2}&show_files={3}&show_issues={4}&show_messages={5}&show_news={6}&show_wiki_edits={7}&per_page=999999";
+
+        /// <summary>
         /// Relative path to the project settings Information form
         /// </summary>
         private const string ProjectSettingsInfoUri = "projects/settings/{0}";
@@ -88,6 +93,14 @@ namespace Nohal.Redmine
         /// Http Helper class
         /// </summary>
         private HttpHelper httpHelper;
+        
+        /// <summary>
+        /// Initializes a new instance of the Redmine class.
+        /// </summary>
+        public Redmine()
+        {
+            this.httpHelper = new HttpHelper();
+        }
 
         /// <summary>
         /// Gets or sets the base URI of the Redmine installation
@@ -138,19 +151,11 @@ namespace Nohal.Redmine
         }
 
         /// <summary>
-        /// Initializes a new instance of the Redmine class.
-        /// </summary>
-        public Redmine()
-        {
-            this.httpHelper = new HttpHelper();
-        }
-
-        /// <summary>
         /// Logs user into Redmine
         /// </summary>
         public void LogIn()
         {
-            if (!string.IsNullOrEmpty(RedmineUser))
+            if (!string.IsNullOrEmpty(this.RedmineUser))
             {
                 string requestData = String.Format(LoginRequest,
                                                    System.Web.HttpUtility.UrlEncode(
@@ -347,6 +352,34 @@ namespace Nohal.Redmine
         }
 
         /// <summary>
+        /// Gets the list of recent project activity
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="activityTypes">The activity types you want to return.</param>
+        /// <returns>
+        /// List of all the project activities of the desired types.
+        /// </returns>
+        public List<ProjectActivity> GetRecentActivity(int projectId, params RecentActivityType[] activityTypes)
+        {
+            XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(RecentActivitiesRelativeUri))));
+            List<ProjectActivity> activities = new List<ProjectActivity>();
+            foreach (AtomEntry entry in AtomParser.ParseFeed(page.XmlDocument))
+            {
+                activities.Add(new ProjectActivity
+                                   {
+                                       Title = entry.Title,
+                                       Content = entry.Content,
+                                       Url = entry.Id,
+                                       Updated = DateTime.Parse(entry.Updated),
+                                       AuthorName = entry.Author.Name,
+                                       AuthorEmail = entry.Author.Email
+                                   });
+            }
+
+            return activities;
+        }
+
+        /// <summary>
         /// Logs time spent on an issue
         /// </summary>
         /// <param name="projectId">Project Id</param>
@@ -375,7 +408,7 @@ namespace Nohal.Redmine
         public void CreateIssue(Issue newIssue)
         {
             NameValueCollection requestParameters = new NameValueCollection();
-            foreach(User user in newIssue.Watchers)
+            foreach (User user in newIssue.Watchers)
             {
                 requestParameters.Add("issue[watcher_user_ids][]", user.Id.ToString());
             }
@@ -389,8 +422,8 @@ namespace Nohal.Redmine
         private Uri ConstructUri(string redmineRelativeUri)
         {
             string relativepath;
-            relativepath = VirtualPathUtility.AppendTrailingSlash(redmineBaseUri.AbsolutePath);
-            UriBuilder ub = new UriBuilder(this.redmineBaseUri.Scheme, redmineBaseUri.Host, redmineBaseUri.Port, relativepath);
+            relativepath = VirtualPathUtility.AppendTrailingSlash(this.redmineBaseUri.AbsolutePath);
+            UriBuilder ub = new UriBuilder(this.redmineBaseUri.Scheme, this.redmineBaseUri.Host, this.redmineBaseUri.Port, relativepath);
             return new Uri(ub.Uri + redmineRelativeUri);
         }
     }

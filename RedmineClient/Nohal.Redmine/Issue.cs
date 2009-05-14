@@ -17,6 +17,16 @@ namespace Nohal.Redmine
     public class Issue
     {
         /// <summary>
+        /// List of related issues
+        /// </summary>
+        public Dictionary<int, IssueRelationType> RelatedIssues;
+
+        /// <summary>
+        /// Users watching this issue
+        /// </summary>
+        public List<User> Watchers;
+
+        /// <summary>
         /// Gets or sets the issue Id in Redmine
         /// </summary>
         public int Id { get; set; }
@@ -77,17 +87,7 @@ namespace Nohal.Redmine
         public int TargetVersionId { get; set; }
 
         /// <summary>
-        /// List of related issues
-        /// </summary>
-        public Dictionary<int, IssueRelationType> RelatedIssues;
-
-        /// <summary>
-        /// Users watching this issue
-        /// </summary>
-        public List<User> Watchers;
-
-        /// <summary>
-        /// Additional issue parameters.
+        /// Gets or sets additional issue parameters.
         /// This property can be used for specifying additional parameters specific for your particular Redmine instance.
         /// </summary>
         public NameValueCollection AdditionalParameters { get; set; }

@@ -25,6 +25,21 @@ namespace Nohal.Redmine
         internal string Id { get; set; }
 
         /// <summary>
+        /// Gets or sets the Content of the entry
+        /// </summary>
+        internal string Content { get; set; }
+
+        /// <summary>
+        /// Gets or sets the timestamp of the entry
+        /// </summary>
+        internal string Updated { get; set; }
+
+        /// <summary>
+        /// Gets or sets the author of the entry
+        /// </summary>
+        internal AtomAuthor Author { get; set; }
+
+        /// <summary>
         /// Gets the numeric Id of the entry from the last number contained in the entry address
         /// </summary>
         internal int NumericId
@@ -33,6 +48,22 @@ namespace Nohal.Redmine
             {
                 return Convert.ToInt32(this.Id.Substring(this.Id.LastIndexOf('/') + 1));
             }
+        }
+
+        /// <summary>
+        /// Class representing the author of the atom entry
+        /// </summary>
+        internal class AtomAuthor
+        {
+            /// <summary>
+            /// Gets or sets the name of the author
+            /// </summary>
+            internal string Name { get; set; }
+
+            /// <summary>
+            /// Gets or sets the e-mail address of the author
+            /// </summary>
+            internal string Email { get; set; }
         }
     }
 }
