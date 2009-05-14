@@ -361,7 +361,36 @@ namespace Nohal.Redmine
         /// </returns>
         public List<ProjectActivity> GetRecentActivity(int projectId, params RecentActivityType[] activityTypes)
         {
-            XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(RecentActivitiesRelativeUri))));
+            byte show_issues, show_changesets, show_news, show_documents, show_files, show_wiki_edits, show_messages;
+            show_issues = show_changesets = show_news = show_documents = show_files = show_wiki_edits = show_messages = 0;
+            foreach (RecentActivityType activityType in activityTypes)
+            {
+                switch (activityType)
+                {
+                    case RecentActivityType.Issues:
+                        show_issues = 1;
+                        break;
+                    case RecentActivityType.Changesets:
+                        show_changesets = 1;
+                        break;
+                    case RecentActivityType.News:
+                        show_news = 1;
+                        break;
+                    case RecentActivityType.Documents:
+                        show_documents = 1;
+                        break;
+                    case RecentActivityType.Files:
+                        show_files = 1;
+                        break;
+                    case RecentActivityType.WikiEdits:
+                        show_wiki_edits = 1;
+                        break;
+                    case RecentActivityType.Messages:
+                        show_messages = 1;
+                        break;
+                }
+            }
+            XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(RecentActivitiesRelativeUri, projectId, show_issues, show_changesets, show_news, show_documents, show_files, show_wiki_edits, show_messages))));
             List<ProjectActivity> activities = new List<ProjectActivity>();
             foreach (AtomEntry entry in AtomParser.ParseFeed(page.XmlDocument))
             {
