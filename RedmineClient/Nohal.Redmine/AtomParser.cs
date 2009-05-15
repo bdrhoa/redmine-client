@@ -38,20 +38,42 @@ namespace Nohal.Redmine
 
                 List<AtomEntry> entries = new List<AtomEntry>();
 
-                if (titles != null && ids != null && contents != null && updates != null && authornames != null && authoremails != null && ids.Count == titles.Count && titles.Count == updates.Count && updates.Count == contents.Count && contents.Count == authornames.Count && authornames.Count == authoremails.Count)
+                if (titles != null && ids != null && contents != null && updates != null && ids.Count == titles.Count && titles.Count == updates.Count && updates.Count == contents.Count)
                 {
                     for (int i = 0; i < titles.Count; i++)
                     {
-                        entries.Add(new AtomEntry()
-                                        {
-                                            Id = ids[i].InnerText,
-                                            Title = titles[i].InnerText,
-                                            Content = contents[i].InnerText,
-                                            Updated = updates[i].InnerText,
-                                            Author =
-                                                new AtomEntry.AtomAuthor()
-                                                    {Name = authornames[i].InnerText, Email = authoremails[i].InnerText}
-                                        });
+                        if (authornames != null && authoremails != null && contents.Count == authornames.Count && authornames.Count == authoremails.Count)
+                        {
+                            entries.Add(new AtomEntry()
+                                            {
+                                                Id = ids[i].InnerText,
+                                                Title = titles[i].InnerText,
+                                                Content = contents[i].InnerText,
+                                                Updated = updates[i].InnerText,
+                                                Author =
+                                                    new AtomEntry.AtomAuthor()
+                                                        {
+                                                            Name = authornames[i].InnerText,
+                                                            Email = authoremails[i].InnerText
+                                                        }
+                                            });
+                        }
+                        else
+                        {
+                            entries.Add(new AtomEntry()
+                            {
+                                Id = ids[i].InnerText,
+                                Title = titles[i].InnerText,
+                                Content = contents[i].InnerText,
+                                Updated = updates[i].InnerText,
+                                Author =
+                                    new AtomEntry.AtomAuthor()
+                                    {
+                                        Name = String.Empty,
+                                        Email = String.Empty
+                                    }
+                            });
+                        }
                     }
                 }
 
