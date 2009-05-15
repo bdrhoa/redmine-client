@@ -56,6 +56,7 @@ namespace Nohal.Redmine.Client
             this.BtnSettingsButton = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.BtnNewIssueButton = new System.Windows.Forms.Button();
+            this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
             this.NotifyIconMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridViewIssues)).BeginInit();
             this.SuspendLayout();
@@ -281,6 +282,11 @@ namespace Nohal.Redmine.Client
             this.BtnNewIssueButton.UseVisualStyleBackColor = true;
             this.BtnNewIssueButton.Click += new System.EventHandler(this.BtnNewIssueButton_Click);
             // 
+            // backgroundWorker2
+            // 
+            this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
+            this.backgroundWorker2.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker2_RunWorkerCompleted);
+            // 
             // RedmineClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -345,6 +351,7 @@ namespace Nohal.Redmine.Client
         private Button BtnSettingsButton;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private Button BtnNewIssueButton;
+        private System.ComponentModel.BackgroundWorker backgroundWorker2;
     }
 }
 

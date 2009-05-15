@@ -2,7 +2,7 @@
 
 namespace Nohal.Redmine.Client
 {
-    internal class FormData
+    internal class MainFormData
     {
         public List<Project> Projects { get; set; }
         public List<Activity> Activities { get; set; }

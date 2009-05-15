@@ -9,6 +9,7 @@ namespace Nohal.Redmine.Client
 {
     public partial class RedmineClientForm : Form
     {
+        internal static IssueFormData DataCache;
         private int ticks = 0;
         private bool ticking = false;
         private int issueId = 0;
@@ -61,7 +62,7 @@ namespace Nohal.Redmine.Client
             backgroundWorker1.RunWorkerAsync(0);
         }
 
-        private FormData PrepareFormData(int projectId)
+        private MainFormData PrepareFormData(int projectId)
         {
             redmine.LogIn();
             List<Project> projects = redmine.GetProjects();
@@ -70,13 +71,14 @@ namespace Nohal.Redmine.Client
                 if (projectId == 0)
                 {
                     projectId = projects[0].Id;
+                    backgroundWorker2.RunWorkerAsync(projectId);
                 }
-                return new FormData() { Activities = redmine.GetActivities(projectId), Issues = redmine.GetIssues(projectId), Projects = projects };
+                return new MainFormData() { Activities = redmine.GetActivities(projectId), Issues = redmine.GetIssues(projectId), Projects = projects };
             }
             throw new Exception("No projects found in Redmine.");
         }
 
-        private void FillForm(FormData data)
+        private void FillForm(MainFormData data)
         {
             updating = true;
             if (data.Projects.Count == 0 || data.Issues.Count == 0 || data.Activities.Count == 0)
@@ -84,7 +86,10 @@ namespace Nohal.Redmine.Client
                 BtnCommitButton.Enabled = false;
                 if (data.Projects.Count > 0)
                 {
-                    BtnNewIssueButton.Enabled = true;    
+                    if (DataCache != null)
+                    {
+                        BtnNewIssueButton.Enabled = true;   
+                    }
                 }
                 else
                 {
@@ -96,7 +101,10 @@ namespace Nohal.Redmine.Client
             else
             {
                 BtnCommitButton.Enabled = true;
-                BtnNewIssueButton.Enabled = true;
+                if (DataCache != null)
+                {
+                    BtnNewIssueButton.Enabled = true;
+                }
                 BtnRefreshButton.Enabled = true;
             }
             ComboBoxProject.DataSource = data.Projects;
@@ -378,10 +386,10 @@ namespace Nohal.Redmine.Client
                     projectId = 0;
                 }
                 FillForm(PrepareFormData(projectId));
+                backgroundWorker2.RunWorkerAsync(projectId);
                 updating = true;
                 ComboBoxProject.SelectedIndex = reselect;
                 updating = false;
-                this.Cursor = Cursors.Default;
             }
         }
 
@@ -451,7 +459,7 @@ namespace Nohal.Redmine.Client
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            FormData data;
+            MainFormData data;
             try
             {
                 data = PrepareFormData((int)e.Argument);
@@ -471,7 +479,7 @@ namespace Nohal.Redmine.Client
             }
             else
             {
-				FillForm((FormData)e.Result);
+				FillForm((MainFormData)e.Result);
             }
             this.Cursor = Cursors.Default;
         }
@@ -483,6 +491,29 @@ namespace Nohal.Redmine.Client
             {
                 MessageBox.Show("Adding issues to Redmine not yet implemented.");
             }
+        }
+
+        private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
+        {
+            DataCache = null;
+            int projectId = (int) e.Argument;
+            IssueFormData issueFormData = new IssueFormData();
+            issueFormData.Priorities = redmine.GetPriorities(projectId);
+            issueFormData.Statuses = redmine.GetStatuses(projectId);
+            issueFormData.Trackers = redmine.GetTrackers(projectId);
+            issueFormData.Watchers = redmine.GetWatchers(projectId);
+            issueFormData.Assignees = redmine.GetAssignees(projectId);
+            DataCache = issueFormData;
+        }
+
+        private void backgroundWorker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (DataCache == null)
+            {
+                DataCache = new IssueFormData();
+            }
+            BtnNewIssueButton.Enabled = true;
+            this.Cursor = Cursors.Default;
         }
 
     }
