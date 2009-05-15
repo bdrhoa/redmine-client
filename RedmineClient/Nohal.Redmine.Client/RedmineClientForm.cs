@@ -115,7 +115,11 @@ namespace Nohal.Redmine.Client
                     column.Visible = false;
                 }
             }
-            DataGridViewIssues.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+            try // Very ugly trick to fix the mono crash reported in the SF.net forum
+            {
+                DataGridViewIssues.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+            }
+            catch (Exception) { }
             if (DataGridViewIssues.Columns.Count > 0)
             {
                 DataGridViewIssues.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;    
