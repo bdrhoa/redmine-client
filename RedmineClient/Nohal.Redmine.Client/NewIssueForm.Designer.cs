@@ -54,6 +54,7 @@
             this.label11 = new System.Windows.Forms.Label();
             this.ListBoxWatchers = new System.Windows.Forms.ListBox();
             this.label12 = new System.Windows.Forms.Label();
+            this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -131,9 +132,12 @@
             // 
             // TextBoxDescription
             // 
+            this.TextBoxDescription.AcceptsReturn = true;
+            this.TextBoxDescription.AcceptsTab = true;
             this.TextBoxDescription.Location = new System.Drawing.Point(15, 120);
             this.TextBoxDescription.Multiline = true;
             this.TextBoxDescription.Name = "TextBoxDescription";
+            this.TextBoxDescription.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.TextBoxDescription.Size = new System.Drawing.Size(551, 77);
             this.TextBoxDescription.TabIndex = 16;
             // 
@@ -291,6 +295,11 @@
             this.label12.TabIndex = 34;
             this.label12.Text = "Watchers";
             // 
+            // backgroundWorker2
+            // 
+            this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
+            this.backgroundWorker2.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker2_RunWorkerCompleted);
+            // 
             // NewIssueForm
             // 
             this.AcceptButton = this.BtnSaveButton;
@@ -362,5 +371,6 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ListBox ListBoxWatchers;
         private System.Windows.Forms.Label label12;
+        private System.ComponentModel.BackgroundWorker backgroundWorker2;
     }
 }

@@ -9,13 +9,13 @@ namespace Nohal.Redmine.Client
 {
     public partial class RedmineClientForm : Form
     {
-        internal static IssueFormData DataCache;
+        internal static IssueFormData DataCache = null;
         private int ticks = 0;
         private bool ticking = false;
         private int issueId = 0;
-        private int projectId = 0;
+        internal int projectId = 0;
         private int activityId = 0;
-        private static Redmine redmine;
+        internal static Redmine redmine;
         private bool updating = false;
 
         private string RedmineURL;
@@ -71,7 +71,6 @@ namespace Nohal.Redmine.Client
                 if (projectId == 0)
                 {
                     projectId = projects[0].Id;
-                    backgroundWorker2.RunWorkerAsync(projectId);
                 }
                 return new MainFormData() { Activities = redmine.GetActivities(projectId), Issues = redmine.GetIssues(projectId), Projects = projects };
             }
@@ -86,10 +85,7 @@ namespace Nohal.Redmine.Client
                 BtnCommitButton.Enabled = false;
                 if (data.Projects.Count > 0)
                 {
-                    if (DataCache != null)
-                    {
-                        BtnNewIssueButton.Enabled = true;   
-                    }
+                    BtnNewIssueButton.Enabled = true;   
                 }
                 else
                 {
@@ -101,10 +97,7 @@ namespace Nohal.Redmine.Client
             else
             {
                 BtnCommitButton.Enabled = true;
-                if (DataCache != null)
-                {
-                    BtnNewIssueButton.Enabled = true;
-                }
+                BtnNewIssueButton.Enabled = true;
                 BtnRefreshButton.Enabled = true;
             }
             ComboBoxProject.DataSource = data.Projects;
@@ -151,6 +144,7 @@ namespace Nohal.Redmine.Client
                 DataGridViewIssues_SelectionChanged(null, null);
             }
             updating = false;
+            this.Cursor = Cursors.Default;
         }
 
         private void LoadConfig()
@@ -379,6 +373,7 @@ namespace Nohal.Redmine.Client
         {
             if (!updating)
             {
+                DataCache = null;
                 int reselect = ComboBoxProject.SelectedIndex;
                 this.Cursor = Cursors.AppStarting;
                 if (!Int32.TryParse(ComboBoxProject.SelectedValue.ToString(), out projectId))
@@ -386,7 +381,6 @@ namespace Nohal.Redmine.Client
                     projectId = 0;
                 }
                 FillForm(PrepareFormData(projectId));
-                backgroundWorker2.RunWorkerAsync(projectId);
                 updating = true;
                 ComboBoxProject.SelectedIndex = reselect;
                 updating = false;
@@ -487,34 +481,11 @@ namespace Nohal.Redmine.Client
         private void BtnNewIssueButton_Click(object sender, EventArgs e)
         {
             NewIssueForm dlg = new NewIssueForm();
+            dlg.ProjectId = projectId;
             if (dlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
                 MessageBox.Show("Adding issues to Redmine not yet implemented.");
             }
         }
-
-        private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
-        {
-            DataCache = null;
-            int projectId = (int) e.Argument;
-            IssueFormData issueFormData = new IssueFormData();
-            issueFormData.Priorities = redmine.GetPriorities(projectId);
-            issueFormData.Statuses = redmine.GetStatuses(projectId);
-            issueFormData.Trackers = redmine.GetTrackers(projectId);
-            issueFormData.Watchers = redmine.GetWatchers(projectId);
-            issueFormData.Assignees = redmine.GetAssignees(projectId);
-            DataCache = issueFormData;
-        }
-
-        private void backgroundWorker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (DataCache == null)
-            {
-                DataCache = new IssueFormData();
-            }
-            BtnNewIssueButton.Enabled = true;
-            this.Cursor = Cursors.Default;
-        }
-
     }
 }

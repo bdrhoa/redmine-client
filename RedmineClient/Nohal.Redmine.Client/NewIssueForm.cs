@@ -10,6 +10,8 @@ namespace Nohal.Redmine.Client
 {
     public partial class NewIssueForm : Form
     {
+        internal int ProjectId;
+
         public NewIssueForm()
         {
             InitializeComponent();
@@ -51,10 +53,20 @@ namespace Nohal.Redmine.Client
 
         private void NewIssueForm_Load(object sender, EventArgs e)
         {
-            while (RedmineClientForm.DataCache == null)
+            if (RedmineClientForm.DataCache == null)
             {
-                System.Threading.Thread.Sleep(10);
+                this.Cursor = Cursors.AppStarting;
+                backgroundWorker2.RunWorkerAsync(ProjectId);
+                this.BtnSaveButton.Enabled = false;
             }
+            else
+            {
+                FillForm();   
+            }
+        }
+
+        private void FillForm()
+        {
             this.ComboBoxAssignedTo.DataSource = RedmineClientForm.DataCache.Assignees;
             this.ComboBoxAssignedTo.DisplayMember = "Name";
             this.ComboBoxAssignedTo.ValueMember = "Id";
@@ -74,6 +86,25 @@ namespace Nohal.Redmine.Client
             this.ListBoxWatchers.DisplayMember = "Name";
             this.ListBoxWatchers.ClearSelected();
         }
+
+        private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
+        {
+            RedmineClientForm.DataCache = new IssueFormData();
+            int projectId = (int)e.Argument;
+            RedmineClientForm.DataCache.Priorities = RedmineClientForm.redmine.GetPriorities(projectId);
+            RedmineClientForm.DataCache.Statuses = RedmineClientForm.redmine.GetStatuses(projectId);
+            RedmineClientForm.DataCache.Trackers = RedmineClientForm.redmine.GetTrackers(projectId);
+            RedmineClientForm.DataCache.Watchers = RedmineClientForm.redmine.GetWatchers(projectId);
+            RedmineClientForm.DataCache.Assignees = RedmineClientForm.redmine.GetAssignees(projectId);
+        }
+
+        private void backgroundWorker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            this.Cursor = Cursors.Default;
+            FillForm();
+            this.BtnSaveButton.Enabled = true;
+        }
+
 
     }
 }
