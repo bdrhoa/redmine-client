@@ -339,7 +339,7 @@ namespace Nohal.Redmine
         /// </summary>
         /// <param name="projectId">Project Id</param>
         /// <returns>List of all the users available to be assigned to project issues</returns>
-        public List<User> GetAsignees(int projectId)
+        public List<User> GetAssignees(int projectId)
         {
             XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(NewIssueRelativeUri, projectId))));
             List<User> users = new List<User>();
