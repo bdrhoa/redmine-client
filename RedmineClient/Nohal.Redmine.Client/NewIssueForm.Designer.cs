@@ -31,28 +31,28 @@
             this.BtnSaveButton = new System.Windows.Forms.Button();
             this.BtnCancelButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.ComboBoxActivity = new System.Windows.Forms.ComboBox();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.ComboBoxTracker = new System.Windows.Forms.ComboBox();
+            this.DateStart = new System.Windows.Forms.DateTimePicker();
             this.label1 = new System.Windows.Forms.Label();
-            this.TextBoxComment = new System.Windows.Forms.TextBox();
+            this.TextBoxSubject = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.TextBoxDescription = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.ComboBoxStatus = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.ComboBoxPriority = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
+            this.DateDue = new System.Windows.Forms.DateTimePicker();
             this.label8 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.TextBoxEstimatedTime = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
+            this.ComboBoxAssignedTo = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
-            this.comboBox4 = new System.Windows.Forms.ComboBox();
+            this.ComboBoxTargetVersion = new System.Windows.Forms.ComboBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.ListBoxWatchers = new System.Windows.Forms.ListBox();
             this.label12 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
@@ -87,22 +87,22 @@
             this.label2.TabIndex = 12;
             this.label2.Text = "Tracker";
             // 
-            // ComboBoxActivity
+            // ComboBoxTracker
             // 
-            this.ComboBoxActivity.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.ComboBoxActivity.FormattingEnabled = true;
-            this.ComboBoxActivity.Location = new System.Drawing.Point(12, 28);
-            this.ComboBoxActivity.Name = "ComboBoxActivity";
-            this.ComboBoxActivity.Size = new System.Drawing.Size(180, 24);
-            this.ComboBoxActivity.TabIndex = 11;
+            this.ComboBoxTracker.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboBoxTracker.FormattingEnabled = true;
+            this.ComboBoxTracker.Location = new System.Drawing.Point(12, 28);
+            this.ComboBoxTracker.Name = "ComboBoxTracker";
+            this.ComboBoxTracker.Size = new System.Drawing.Size(180, 24);
+            this.ComboBoxTracker.TabIndex = 11;
             // 
-            // dateTimePicker1
+            // DateStart
             // 
-            this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dateTimePicker1.Location = new System.Drawing.Point(15, 220);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(114, 22);
-            this.dateTimePicker1.TabIndex = 13;
+            this.DateStart.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.DateStart.Location = new System.Drawing.Point(15, 220);
+            this.DateStart.Name = "DateStart";
+            this.DateStart.Size = new System.Drawing.Size(114, 22);
+            this.DateStart.TabIndex = 13;
             // 
             // label1
             // 
@@ -113,12 +113,12 @@
             this.label1.TabIndex = 15;
             this.label1.Text = "Subject";
             // 
-            // TextBoxComment
+            // TextBoxSubject
             // 
-            this.TextBoxComment.Location = new System.Drawing.Point(15, 75);
-            this.TextBoxComment.Name = "TextBoxComment";
-            this.TextBoxComment.Size = new System.Drawing.Size(551, 22);
-            this.TextBoxComment.TabIndex = 14;
+            this.TextBoxSubject.Location = new System.Drawing.Point(15, 75);
+            this.TextBoxSubject.Name = "TextBoxSubject";
+            this.TextBoxSubject.Size = new System.Drawing.Size(551, 22);
+            this.TextBoxSubject.TabIndex = 14;
             // 
             // label3
             // 
@@ -129,13 +129,13 @@
             this.label3.TabIndex = 17;
             this.label3.Text = "Description";
             // 
-            // textBox1
+            // TextBoxDescription
             // 
-            this.textBox1.Location = new System.Drawing.Point(15, 120);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(551, 77);
-            this.textBox1.TabIndex = 16;
+            this.TextBoxDescription.Location = new System.Drawing.Point(15, 120);
+            this.TextBoxDescription.Multiline = true;
+            this.TextBoxDescription.Name = "TextBoxDescription";
+            this.TextBoxDescription.Size = new System.Drawing.Size(551, 77);
+            this.TextBoxDescription.TabIndex = 16;
             // 
             // label4
             // 
@@ -146,14 +146,14 @@
             this.label4.TabIndex = 19;
             this.label4.Text = "Status";
             // 
-            // comboBox1
+            // ComboBoxStatus
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(198, 28);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(180, 24);
-            this.comboBox1.TabIndex = 18;
+            this.ComboBoxStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboBoxStatus.FormattingEnabled = true;
+            this.ComboBoxStatus.Location = new System.Drawing.Point(198, 28);
+            this.ComboBoxStatus.Name = "ComboBoxStatus";
+            this.ComboBoxStatus.Size = new System.Drawing.Size(180, 24);
+            this.ComboBoxStatus.TabIndex = 18;
             // 
             // label5
             // 
@@ -164,14 +164,14 @@
             this.label5.TabIndex = 21;
             this.label5.Text = "Priority";
             // 
-            // comboBox2
+            // ComboBoxPriority
             // 
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(386, 28);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(180, 24);
-            this.comboBox2.TabIndex = 20;
+            this.ComboBoxPriority.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboBoxPriority.FormattingEnabled = true;
+            this.ComboBoxPriority.Location = new System.Drawing.Point(386, 28);
+            this.ComboBoxPriority.Name = "ComboBoxPriority";
+            this.ComboBoxPriority.Size = new System.Drawing.Size(180, 24);
+            this.ComboBoxPriority.TabIndex = 20;
             // 
             // label6
             // 
@@ -191,13 +191,13 @@
             this.label7.TabIndex = 24;
             this.label7.Text = "Due date";
             // 
-            // dateTimePicker2
+            // DateDue
             // 
-            this.dateTimePicker2.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dateTimePicker2.Location = new System.Drawing.Point(135, 220);
-            this.dateTimePicker2.Name = "dateTimePicker2";
-            this.dateTimePicker2.Size = new System.Drawing.Size(114, 22);
-            this.dateTimePicker2.TabIndex = 23;
+            this.DateDue.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.DateDue.Location = new System.Drawing.Point(135, 220);
+            this.DateDue.Name = "DateDue";
+            this.DateDue.Size = new System.Drawing.Size(114, 22);
+            this.DateDue.TabIndex = 23;
             // 
             // label8
             // 
@@ -208,12 +208,12 @@
             this.label8.TabIndex = 26;
             this.label8.Text = "Estimated time";
             // 
-            // textBox2
+            // TextBoxEstimatedTime
             // 
-            this.textBox2.Location = new System.Drawing.Point(258, 220);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(117, 22);
-            this.textBox2.TabIndex = 25;
+            this.TextBoxEstimatedTime.Location = new System.Drawing.Point(258, 220);
+            this.TextBoxEstimatedTime.Name = "TextBoxEstimatedTime";
+            this.TextBoxEstimatedTime.Size = new System.Drawing.Size(117, 22);
+            this.TextBoxEstimatedTime.TabIndex = 25;
             // 
             // label9
             // 
@@ -224,14 +224,14 @@
             this.label9.TabIndex = 28;
             this.label9.Text = "Assigned to";
             // 
-            // comboBox3
+            // ComboBoxAssignedTo
             // 
-            this.comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(386, 220);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(180, 24);
-            this.comboBox3.TabIndex = 27;
+            this.ComboBoxAssignedTo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboBoxAssignedTo.FormattingEnabled = true;
+            this.ComboBoxAssignedTo.Location = new System.Drawing.Point(386, 220);
+            this.ComboBoxAssignedTo.Name = "ComboBoxAssignedTo";
+            this.ComboBoxAssignedTo.Size = new System.Drawing.Size(180, 24);
+            this.ComboBoxAssignedTo.TabIndex = 27;
             // 
             // label10
             // 
@@ -242,17 +242,22 @@
             this.label10.TabIndex = 30;
             this.label10.Text = "Target version";
             // 
-            // comboBox4
+            // ComboBoxTargetVersion
             // 
-            this.comboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox4.FormattingEnabled = true;
-            this.comboBox4.Location = new System.Drawing.Point(386, 267);
-            this.comboBox4.Name = "comboBox4";
-            this.comboBox4.Size = new System.Drawing.Size(180, 24);
-            this.comboBox4.TabIndex = 29;
+            this.ComboBoxTargetVersion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboBoxTargetVersion.FormattingEnabled = true;
+            this.ComboBoxTargetVersion.Location = new System.Drawing.Point(386, 267);
+            this.ComboBoxTargetVersion.Name = "ComboBoxTargetVersion";
+            this.ComboBoxTargetVersion.Size = new System.Drawing.Size(180, 24);
+            this.ComboBoxTargetVersion.TabIndex = 29;
             // 
             // numericUpDown1
             // 
+            this.numericUpDown1.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
             this.numericUpDown1.Location = new System.Drawing.Point(258, 268);
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.Size = new System.Drawing.Size(120, 22);
@@ -267,15 +272,15 @@
             this.label11.TabIndex = 32;
             this.label11.Text = "% done";
             // 
-            // listBox1
+            // ListBoxWatchers
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.ItemHeight = 16;
-            this.listBox1.Location = new System.Drawing.Point(15, 268);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listBox1.Size = new System.Drawing.Size(234, 68);
-            this.listBox1.TabIndex = 33;
+            this.ListBoxWatchers.FormattingEnabled = true;
+            this.ListBoxWatchers.ItemHeight = 16;
+            this.ListBoxWatchers.Location = new System.Drawing.Point(15, 268);
+            this.ListBoxWatchers.Name = "ListBoxWatchers";
+            this.ListBoxWatchers.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.ListBoxWatchers.Size = new System.Drawing.Size(234, 68);
+            this.ListBoxWatchers.TabIndex = 33;
             // 
             // label12
             // 
@@ -294,34 +299,35 @@
             this.CancelButton = this.BtnCancelButton;
             this.ClientSize = new System.Drawing.Size(578, 346);
             this.Controls.Add(this.label12);
-            this.Controls.Add(this.listBox1);
+            this.Controls.Add(this.ListBoxWatchers);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.label10);
-            this.Controls.Add(this.comboBox4);
+            this.Controls.Add(this.ComboBoxTargetVersion);
             this.Controls.Add(this.label9);
-            this.Controls.Add(this.comboBox3);
+            this.Controls.Add(this.ComboBoxAssignedTo);
             this.Controls.Add(this.label8);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.TextBoxEstimatedTime);
             this.Controls.Add(this.label7);
-            this.Controls.Add(this.dateTimePicker2);
+            this.Controls.Add(this.DateDue);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.comboBox2);
+            this.Controls.Add(this.ComboBoxPriority);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.ComboBoxStatus);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.TextBoxDescription);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.TextBoxComment);
-            this.Controls.Add(this.dateTimePicker1);
+            this.Controls.Add(this.TextBoxSubject);
+            this.Controls.Add(this.DateStart);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.ComboBoxActivity);
+            this.Controls.Add(this.ComboBoxTracker);
             this.Controls.Add(this.BtnSaveButton);
             this.Controls.Add(this.BtnCancelButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "NewIssueForm";
             this.Text = "Create new issue";
+            this.Load += new System.EventHandler(this.NewIssueForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -333,28 +339,28 @@
         private System.Windows.Forms.Button BtnSaveButton;
         private System.Windows.Forms.Button BtnCancelButton;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox ComboBoxActivity;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.ComboBox ComboBoxTracker;
+        private System.Windows.Forms.DateTimePicker DateStart;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox TextBoxComment;
+        private System.Windows.Forms.TextBox TextBoxSubject;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox TextBoxDescription;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox ComboBoxStatus;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ComboBox ComboBoxPriority;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.DateTimePicker dateTimePicker2;
+        private System.Windows.Forms.DateTimePicker DateDue;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox TextBoxEstimatedTime;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.ComboBox comboBox3;
+        private System.Windows.Forms.ComboBox ComboBoxAssignedTo;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.ComboBox comboBox4;
+        private System.Windows.Forms.ComboBox ComboBoxTargetVersion;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ListBox ListBoxWatchers;
         private System.Windows.Forms.Label label12;
     }
 }
