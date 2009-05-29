@@ -17,29 +17,29 @@ namespace Nohal.Redmine
     public class Issue
     {
         /// <summary>
-        /// Gets or sets the Id of the project
+        /// Gets or sets the list of related issues
         /// </summary>
-        public int ProjectId { get; set; }
+        public Dictionary<int, IssueRelationType> RelatedIssues { get; set; }
 
         /// <summary>
-        /// List of related issues
+        /// Gets or sets the users watching this issue
         /// </summary>
-        public Dictionary<int, IssueRelationType> RelatedIssues;
+        public List<User> Watchers { get; set; }
 
         /// <summary>
-        /// Users watching this issue
+        /// Gets or sets the file attachments (Path => Description)
         /// </summary>
-        public List<User> Watchers;
-
-        /// <summary>
-        /// File attachments (Path => Description)
-        /// </summary>
-        public NameValueCollection Attachments;
+        public NameValueCollection Attachments { get; set; }
 
         /// <summary>
         /// Gets or sets the issue Id in Redmine
         /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Id of the project
+        /// </summary>
+        public int ProjectId { get; set; }
 
         /// <summary>
         /// Gets or sets the issue subject text
@@ -102,6 +102,10 @@ namespace Nohal.Redmine
         /// </summary>
         public NameValueCollection AdditionalParameters { get; set; }
 
+        /// <summary>
+        /// Prepares the request data
+        /// </summary>
+        /// <returns>The request data</returns>
         internal byte[] MakeRequestData()
         {
             MultipartData data = new MultipartData();
@@ -116,10 +120,12 @@ namespace Nohal.Redmine
             {
                 data.AddValue("issue[start_date]", this.Start.ToString("yyyy-MM-dd"));
             }
+
             if (this.DueDate != DateTime.MinValue)
             {
                 data.AddValue("issue[due_date]", this.DueDate.ToString("yyyy-MM-dd"));   
             }
+
             data.AddValue("issue[estimated_hours]", this.EstimatedTime.ToString());
             data.AddValue("issue[done_ratio]", this.PercentDone.ToString());
             if (this.Attachments != null)
@@ -132,6 +138,7 @@ namespace Nohal.Redmine
                     counter++;
                 }
             }
+
             if (this.Watchers != null)
             {
                 foreach (User watcher in this.Watchers)
@@ -139,6 +146,7 @@ namespace Nohal.Redmine
                     data.AddValue("issue[watcher_user_ids][]", watcher.Id.ToString());
                 }
             }
+
             if (this.AdditionalParameters != null)
             {
                 foreach (KeyValuePair<string, string> parameter in this.AdditionalParameters)
@@ -146,6 +154,7 @@ namespace Nohal.Redmine
                     data.AddValue(parameter.Key, parameter.Value);
                 }
             }
+
             data.AddValue("commit", "Create");
             return data.Data;
         }

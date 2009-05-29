@@ -14,23 +14,35 @@ namespace Nohal.Redmine
     public class IssueRelationType
     {
         /// <summary>
-        /// Issue is related to another issue
+        /// Gets the value for the issue which is related to another issue
         /// </summary>
-        public static string RelatedTo = "relatedto";
+        public static string RelatedTo
+        {
+            get { return "relatedto"; }
+        }
 
-        /// <summary>
-        /// Issue is a duplicate of another issue
+            /// <summary>
+        /// Gets the value for the issue which is a duplicate of another issue
         /// </summary>
-        public static string Duplicates = "duplicates";
+        public static string Duplicates
+        {
+            get { return "duplicates"; }
+        }
         
         /// <summary>
-        /// Issue blocks another issue
+        /// Gets the value for the issue which blocks another issue
         /// </summary>
-        public static string Blocks = "blocks";
+        public static string Blocks
+        {
+            get { return "blocks"; }
+        }
         
         /// <summary>
-        /// Issue precedes another issue
+        /// Gets the value for the issue which precedes another issue
         /// </summary>
-        public static string Precedes = "precedes";
+        public static string Precedes
+        {
+            get { return "precedes"; }
+        }
     }
 }

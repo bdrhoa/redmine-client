@@ -15,6 +15,130 @@ using System.Web;
 namespace Nohal.Redmine
 {
     /// <summary>
+    /// Helper class for constructing the multipart/form-data POST requests
+    /// </summary>
+    public class MultipartData
+    {
+        /// <summary>
+        /// Boundary dividing form fields
+        /// </summary>
+        private static string boundary = "-----------------------------7d951471538";
+        
+        /// <summary>
+        /// Request data
+        /// </summary>
+        private byte[] data = new byte[0];
+
+        /// <summary>
+        /// Is the request closed?
+        /// </summary>
+        private bool finished = false;
+
+        /// <summary>
+        /// Gets the Boundary string
+        /// </summary>
+        public static string Boundary
+        {
+            get
+            {
+                return boundary;
+            }
+        }
+
+        /// <summary>
+        /// Gets the data of the request
+        /// </summary>
+        public byte[] Data
+        {
+            get
+            {
+                this.Finish();
+                return this.data;
+            }
+        }
+
+        /// <summary>
+        /// Adds new form field name/value pair
+        /// </summary>
+        /// <param name="name">The name of the field</param>
+        /// <param name="value">Tha value of the field</param>
+        public void AddValue(string name, string value)
+        {
+            if (this.finished)
+            {
+                throw new HttpRequestValidationException("The request is finished, you can't add any more fields.");
+            }
+
+            string text;
+            text = "--" + boundary + "\r\n";
+            text += "Content-Disposition: form-data; name=\"" + name + "\"\r\n\r\n";
+            text += value + "\r\n";
+
+            byte[] bytes = Encoding.ASCII.GetBytes(text);
+
+            byte[] final = new byte[this.data.Length + bytes.Length];
+            Buffer.BlockCopy(this.data, 0, final, 0, this.data.Length);
+            Buffer.BlockCopy(bytes, 0, final, this.data.Length, bytes.Length);
+            this.data = final;
+        }
+
+        /// <summary>
+        /// Adds a file to the post request
+        /// </summary>
+        /// <param name="name">The name of the field</param>
+        /// <param name="fileName">The file path</param>
+        public void AddFile(string name, string fileName)
+        {
+            if (this.finished)
+            {
+                throw new HttpRequestValidationException("The request is finished, you can't add any more files.");
+            }
+
+            string text;
+            text = "--" + boundary + "\r\n";
+            text += "Content-Disposition: form-data; name=\"" + name + "\"; filename=\"" + fileName + "\"\r\n";
+            text += "Content-Type: application/octet-stream\r\n\r\n";
+
+            byte[] textBytes = Encoding.ASCII.GetBytes(text);
+            byte[] fileBytes;
+
+            try
+            {
+                fileBytes = File.ReadAllBytes(fileName);
+            }
+            catch (Exception)
+            {
+                fileBytes = new byte[0];
+            }
+
+            byte[] final = new byte[this.data.Length + textBytes.Length + fileBytes.Length + 2];
+            Buffer.BlockCopy(this.data, 0, final, 0, this.data.Length);
+            Buffer.BlockCopy(textBytes, 0, final, this.data.Length, textBytes.Length);
+            Buffer.BlockCopy(fileBytes, 0, final, this.data.Length + textBytes.Length, fileBytes.Length);
+            final[final.Length - 2] = 13;
+            final[final.Length - 1] = 10;
+            this.data = final;
+        }
+
+        /// <summary>
+        /// Finishes the creation of the request
+        /// </summary>
+        private void Finish()
+        {
+            if (!this.finished)
+            {
+                this.finished = true;
+                byte[] bytes = Encoding.ASCII.GetBytes("--" + boundary + "--");
+
+                byte[] final = new byte[this.data.Length + bytes.Length];
+                Buffer.BlockCopy(this.data, 0, final, 0, this.data.Length);
+                Buffer.BlockCopy(bytes, 0, final, this.data.Length, bytes.Length);
+                this.data = final;
+            }
+        }
+    }
+
+    /// <summary>
     /// Class providing support for HTTP operations.
     /// </summary>
     internal class HttpHelper
@@ -84,7 +208,7 @@ namespace Nohal.Redmine
         {
             if (sb.Length == 0)
             {
-                String.Format("{0}={1}", key, HttpUtility.UrlEncode(value));  
+                String.Format("{0}={1}", key, HttpUtility.UrlEncode(value));
             }
             else
             {
@@ -118,19 +242,20 @@ namespace Nohal.Redmine
             request.Headers.Set("Pragma", "no-cache");
             //// set the request timeout to 5 min.
             request.Timeout = 300000;
-            
+
             //// add the content type so we can handle form data
             if (method == "GET" || method == "POST")
             {
                 //// set the request method
                 request.Method = method;
                 request.ContentType = "application/x-www-form-urlencoded";
-            } else
+            }
+            else
             {
                 request.Method = "POST";
-                request.ContentType = "multipart/form-data; boundary=" + MultipartData.boundary;
+                request.ContentType = "multipart/form-data; Boundary=" + MultipartData.Boundary;
             }
-            
+
             if (request.Method == "POST")
             {
                 request.ContentLength = postData.Length;
@@ -160,119 +285,6 @@ namespace Nohal.Redmine
             string s = sr.ReadToEnd();
             httpWResponse.Close();
             return s;
-        }
-    }
-
-    /// <summary>
-    /// Helper class for constructing the multipart/form-data POST requests
-    /// </summary>
-    public class MultipartData
-    {
-        internal static string boundary = "-----------------------------7d951471538";
-        
-        private byte[] data = new byte[0];
-
-        private bool finished = false;
-
-        /// <summary>
-        /// Adds new form field name/value pair
-        /// </summary>
-        /// <param name="name">The name of the field</param>
-        /// <param name="value">Tha value of the field</param>
-        public void AddValue(string name, string value)
-        {
-            if (finished)
-            {
-                throw new HttpRequestValidationException("The request is finished, you can't add any more fields.");
-            }
-            string text;
-            text = "--" + boundary + "\r\n";
-            text += "Content-Disposition: form-data; name=\"" + name + "\"\r\n\r\n";
-            text += value + "\r\n";
-
-            byte[] bytes = Encoding.ASCII.GetBytes(text);
-
-            byte[] final = new byte[data.Length + bytes.Length];
-            Buffer.BlockCopy(data, 0, final, 0, data.Length);
-            Buffer.BlockCopy(bytes, 0, final, data.Length, bytes.Length);
-            data = final;
-        }
-
-        /// <summary>
-        /// Adds a file to the post request
-        /// </summary>
-        /// <param name="name">The name of the field</param>
-        /// <param name="fileName">The file path</param>
-        public void AddFile(string name, string fileName)
-        {
-            if (finished)
-            {
-                throw new HttpRequestValidationException("The request is finished, you can't add any more files.");
-            }
-            string text;
-            text = "--" + boundary + "\r\n";
-            text += "Content-Disposition: form-data; name=\"" + name + "\"; filename=\"" + fileName + "\"\r\n";
-            text += "Content-Type: application/octet-stream\r\n\r\n";
-
-            byte[] textBytes = Encoding.ASCII.GetBytes(text);
-            byte[] fileBytes;
-
-            try
-            {
-                fileBytes = File.ReadAllBytes(fileName);
-            }
-            catch (Exception)
-            {
-                fileBytes = new byte[0];
-            }
-
-            byte[] final = new byte[data.Length + textBytes.Length + fileBytes.Length + 2];
-            Buffer.BlockCopy(data, 0, final, 0, data.Length);
-            Buffer.BlockCopy(textBytes, 0, final, data.Length, textBytes.Length);
-            Buffer.BlockCopy(fileBytes, 0, final, data.Length + textBytes.Length, fileBytes.Length);
-            final[final.Length - 2] = 13;
-            final[final.Length - 1] = 10;
-            data = final;
-        }
-
-        /// <summary>
-        /// Finishes the creation of the request
-        /// </summary>
-        private void Finish()
-        {
-            if (!finished)
-            {
-                finished = true;
-                byte[] bytes = Encoding.ASCII.GetBytes("--" + boundary + "--");
-
-                byte[] final = new byte[data.Length + bytes.Length];
-                Buffer.BlockCopy(data, 0, final, 0, data.Length);
-                Buffer.BlockCopy(bytes, 0, final, data.Length, bytes.Length);
-                data = final;
-            }
-        }
-
-        /// <summary>
-        /// Gets the boundary string
-        /// </summary>
-        public string Boundary
-        {
-            get
-            {
-                return boundary;
-            }
-        }
-
-        /// <summary>
-        /// Gets the data of the request
-        /// </summary>
-        public byte[] Data
-        {
-            get
-            {
-                Finish();
-                return data;
-            }
         }
     }
 }

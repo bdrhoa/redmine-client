@@ -104,7 +104,7 @@ namespace Nohal.Redmine
         /// <summary>
         /// Gets the System.Xml.XmlNodeList of nodes with the specified name
         /// </summary>
-        /// <param name="elementName>name of the element</param>
+        /// <param name="elementName">The name of the element</param>
         /// <returns>Matching System.Xml.XmlNodeList</returns>
         private XmlNodeList GetElementsByName(string elementName)
         {

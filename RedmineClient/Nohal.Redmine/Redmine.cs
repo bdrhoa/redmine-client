@@ -260,7 +260,7 @@ namespace Nohal.Redmine
             List<Tracker> trackers = new List<Tracker>();
             foreach (KeyValuePair<int, string> kv in page.GetSelectOptions("issue_tracker_id"))
             {
-                trackers.Add(new Tracker() {Id = kv.Key, Name = kv.Value});
+                trackers.Add(new Tracker() { Id = kv.Key, Name = kv.Value });
             }
 
             return trackers;
@@ -389,6 +389,7 @@ namespace Nohal.Redmine
                         break;
                 }
             }
+
             XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(RecentActivitiesRelativeUri, projectId, sb))));
             List<ProjectActivity> activities = new List<ProjectActivity>();
             foreach (AtomEntry entry in AtomParser.ParseFeed(page.XmlDocument))
