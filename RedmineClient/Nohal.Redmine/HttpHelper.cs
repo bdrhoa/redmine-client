@@ -31,7 +31,7 @@ namespace Nohal.Redmine
         /// <returns>The response text</returns>
         internal string GetWebRequest(Uri requestUri)
         {
-            return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "GET", String.Empty);
+            return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "GET", null);
         }
 
         /// <summary>
@@ -40,9 +40,22 @@ namespace Nohal.Redmine
         /// <param name="requestUri">Requested address</param>
         /// <param name="postDataText">URLEncoded text for the post body</param>
         /// <returns>The response text</returns>
-        internal string PostWebRequest(Uri requestUri, string postDataText)
+        internal string PostUrlEncodedWebRequest(Uri requestUri, string postDataText)
         {
-            return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "POST", postDataText);
+            //// we need to store the data into a byte array
+            byte[] postData = Encoding.ASCII.GetBytes(postDataText);
+            return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "POST", postData);
+        }
+
+        /// <summary>
+        /// Makes a multipart/form-data web request using POST method
+        /// </summary>
+        /// <param name="requestUri">Requested address</param>
+        /// <param name="postData">The data to POST to the server</param>
+        /// <returns>The response text</returns>
+        internal string PostMultipartFormDataWebRequest(Uri requestUri, byte[] postData)
+        {
+            return this.WebRequest((HttpWebRequest)System.Net.WebRequest.Create(requestUri), "POSTmultipart", postData);
         }
 
         /// <summary>
@@ -84,15 +97,17 @@ namespace Nohal.Redmine
         /// </summary>
         /// <param name="request">Web request</param>
         /// <param name="method">Request method</param>
-        /// <param name="postDataText">URLEncoded text for the post body</param>
+        /// <param name="postData">Data for the post body</param>
         /// <returns>The response text</returns>
-        private string WebRequest(HttpWebRequest request, string method, string postDataText)
+        private string WebRequest(HttpWebRequest request, string method, byte[] postData)
         {
+            System.Net.ServicePointManager.Expect100Continue = false; // Fix for: The remote server returned an error: (417) Expectation Failed.
             if (this.cookieJar == null)
             {
                 this.cookieJar = new CookieContainer();
             }
 
+            request.Proxy = new WebProxy("http://localhost:8888");
             request.CookieContainer = this.cookieJar;
 
             request.UserAgent = "Nohal.Redmine";
@@ -103,15 +118,21 @@ namespace Nohal.Redmine
             request.Headers.Set("Pragma", "no-cache");
             //// set the request timeout to 5 min.
             request.Timeout = 300000;
-            //// set the request method
-            request.Method = method;
-
+            
             //// add the content type so we can handle form data
-            request.ContentType = "application/x-www-form-urlencoded";
+            if (method == "GET" || method == "POST")
+            {
+                //// set the request method
+                request.Method = method;
+                request.ContentType = "application/x-www-form-urlencoded";
+            } else
+            {
+                request.Method = "POST";
+                request.ContentType = "multipart/form-data; boundary=" + MultipartData.boundary;
+            }
+            
             if (request.Method == "POST")
             {
-                //// we need to store the data into a byte array
-                byte[] postData = Encoding.ASCII.GetBytes(postDataText);
                 request.ContentLength = postData.Length;
                 Stream tempStream = request.GetRequestStream();
                 //// write the data to be posted to the Request Stream
@@ -139,6 +160,119 @@ namespace Nohal.Redmine
             string s = sr.ReadToEnd();
             httpWResponse.Close();
             return s;
+        }
+    }
+
+    /// <summary>
+    /// Helper class for constructing the multipart/form-data POST requests
+    /// </summary>
+    public class MultipartData
+    {
+        internal static string boundary = "-----------------------------7d951471538";
+        
+        private byte[] data = new byte[0];
+
+        private bool finished = false;
+
+        /// <summary>
+        /// Adds new form field name/value pair
+        /// </summary>
+        /// <param name="name">The name of the field</param>
+        /// <param name="value">Tha value of the field</param>
+        public void AddValue(string name, string value)
+        {
+            if (finished)
+            {
+                throw new HttpRequestValidationException("The request is finished, you can't add any more fields.");
+            }
+            string text;
+            text = "--" + boundary + "\r\n";
+            text += "Content-Disposition: form-data; name=\"" + name + "\"\r\n\r\n";
+            text += value + "\r\n";
+
+            byte[] bytes = Encoding.ASCII.GetBytes(text);
+
+            byte[] final = new byte[data.Length + bytes.Length];
+            Buffer.BlockCopy(data, 0, final, 0, data.Length);
+            Buffer.BlockCopy(bytes, 0, final, data.Length, bytes.Length);
+            data = final;
+        }
+
+        /// <summary>
+        /// Adds a file to the post request
+        /// </summary>
+        /// <param name="name">The name of the field</param>
+        /// <param name="fileName">The file path</param>
+        public void AddFile(string name, string fileName)
+        {
+            if (finished)
+            {
+                throw new HttpRequestValidationException("The request is finished, you can't add any more files.");
+            }
+            string text;
+            text = "--" + boundary + "\r\n";
+            text += "Content-Disposition: form-data; name=\"" + name + "\"; filename=\"" + fileName + "\"\r\n";
+            text += "Content-Type: application/octet-stream\r\n\r\n";
+
+            byte[] textBytes = Encoding.ASCII.GetBytes(text);
+            byte[] fileBytes;
+
+            try
+            {
+                fileBytes = File.ReadAllBytes(fileName);
+            }
+            catch (Exception)
+            {
+                fileBytes = new byte[0];
+            }
+
+            byte[] final = new byte[data.Length + textBytes.Length + fileBytes.Length + 2];
+            Buffer.BlockCopy(data, 0, final, 0, data.Length);
+            Buffer.BlockCopy(textBytes, 0, final, data.Length, textBytes.Length);
+            Buffer.BlockCopy(fileBytes, 0, final, data.Length + textBytes.Length, fileBytes.Length);
+            final[final.Length - 2] = 13;
+            final[final.Length - 1] = 10;
+            data = final;
+        }
+
+        /// <summary>
+        /// Finishes the creation of the request
+        /// </summary>
+        private void Finish()
+        {
+            if (!finished)
+            {
+                finished = true;
+                byte[] bytes = Encoding.ASCII.GetBytes("--" + boundary + "--");
+
+                byte[] final = new byte[data.Length + bytes.Length];
+                Buffer.BlockCopy(data, 0, final, 0, data.Length);
+                Buffer.BlockCopy(bytes, 0, final, data.Length, bytes.Length);
+                data = final;
+            }
+        }
+
+        /// <summary>
+        /// Gets the boundary string
+        /// </summary>
+        public string Boundary
+        {
+            get
+            {
+                return boundary;
+            }
+        }
+
+        /// <summary>
+        /// Gets the data of the request
+        /// </summary>
+        public byte[] Data
+        {
+            get
+            {
+                Finish();
+                return data;
+            }
         }
     }
 }

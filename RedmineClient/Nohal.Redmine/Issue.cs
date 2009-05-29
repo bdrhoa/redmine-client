@@ -17,6 +17,11 @@ namespace Nohal.Redmine
     public class Issue
     {
         /// <summary>
+        /// Gets or sets the Id of the project
+        /// </summary>
+        public int ProjectId { get; set; }
+
+        /// <summary>
         /// List of related issues
         /// </summary>
         public Dictionary<int, IssueRelationType> RelatedIssues;
@@ -25,6 +30,11 @@ namespace Nohal.Redmine
         /// Users watching this issue
         /// </summary>
         public List<User> Watchers;
+
+        /// <summary>
+        /// File attachments (Path => Description)
+        /// </summary>
+        public NameValueCollection Attachments;
 
         /// <summary>
         /// Gets or sets the issue Id in Redmine
@@ -92,6 +102,52 @@ namespace Nohal.Redmine
         /// </summary>
         public NameValueCollection AdditionalParameters { get; set; }
 
-        // TODO: File attachments
+        internal byte[] MakeRequestData()
+        {
+            MultipartData data = new MultipartData();
+            data.AddValue("issue[tracker_id]", this.TrackerId.ToString());
+            data.AddValue("issue[subject]", this.Subject);
+            data.AddValue("issue[description]", this.Description);
+            data.AddValue("issue[status_id]", this.StatusId.ToString());
+            data.AddValue("issue[priority_id]", this.PriorityId.ToString());
+            data.AddValue("issue[assigned_to_id]", this.AssignedTo.ToString());
+            data.AddValue("issue[fixed_version_id]", this.TargetVersionId.ToString());
+            if (this.Start != DateTime.MinValue)
+            {
+                data.AddValue("issue[start_date]", this.Start.ToString("yyyy-MM-dd"));
+            }
+            if (this.DueDate != DateTime.MinValue)
+            {
+                data.AddValue("issue[due_date]", this.DueDate.ToString("yyyy-MM-dd"));   
+            }
+            data.AddValue("issue[estimated_hours]", this.EstimatedTime.ToString());
+            data.AddValue("issue[done_ratio]", this.PercentDone.ToString());
+            if (this.Attachments != null)
+            {
+                int counter = 1;
+                foreach (KeyValuePair<string, string> attachment in this.Attachments)
+                {
+                    data.AddFile(String.Format("attachments[{0}][file]", counter), attachment.Key);
+                    data.AddValue(String.Format("attachments[{0}][description]", counter), attachment.Value);
+                    counter++;
+                }
+            }
+            if (this.Watchers != null)
+            {
+                foreach (User watcher in this.Watchers)
+                {
+                    data.AddValue("issue[watcher_user_ids][]", watcher.Id.ToString());
+                }
+            }
+            if (this.AdditionalParameters != null)
+            {
+                foreach (KeyValuePair<string, string> parameter in this.AdditionalParameters)
+                {
+                    data.AddValue(parameter.Key, parameter.Value);
+                }
+            }
+            data.AddValue("commit", "Create");
+            return data.Data;
+        }
     }
 }

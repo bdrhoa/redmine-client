@@ -162,7 +162,7 @@ namespace Nohal.Redmine
                                                        this.ConstructUri(ProjectListRelativeUri).ToString()),
                                                    System.Web.HttpUtility.UrlEncode(this.RedmineUser),
                                                    System.Web.HttpUtility.UrlEncode(this.RedminePassword));
-                XhtmlPage page = new XhtmlPage(this.httpHelper.PostWebRequest(this.ConstructUri(LoginRelativeUri), requestData));
+                XhtmlPage page = new XhtmlPage(this.httpHelper.PostUrlEncodedWebRequest(this.ConstructUri(LoginRelativeUri), requestData));
 
                 // if we get a feed with projects, we assume that we are successfully authenticated
                 // if we do get xhtml, it's the login form again
@@ -426,7 +426,7 @@ namespace Nohal.Redmine
                                                System.Web.HttpUtility.UrlEncode(String.Format("{0:0.##}", timeSpent)),
                                                System.Web.HttpUtility.UrlEncode(description),
                                                System.Web.HttpUtility.UrlEncode(activityId.ToString()));
-            this.httpHelper.PostWebRequest(this.ConstructUri(String.Format(TimeLogFormRelativeUri, projectId)), requestData);
+            this.httpHelper.PostUrlEncodedWebRequest(this.ConstructUri(String.Format(TimeLogFormRelativeUri, projectId)), requestData);
         }
 
         /// <summary>
@@ -435,11 +435,8 @@ namespace Nohal.Redmine
         /// <param name="newIssue">Issue to create in Redmine</param>
         public void CreateIssue(Issue newIssue)
         {
-            NameValueCollection requestParameters = new NameValueCollection();
-            foreach (User user in newIssue.Watchers)
-            {
-                requestParameters.Add("issue[watcher_user_ids][]", user.Id.ToString());
-            }
+            this.httpHelper.PostMultipartFormDataWebRequest(
+                this.ConstructUri(String.Format(NewIssueRelativeUri, newIssue.ProjectId)), newIssue.MakeRequestData());
         }
 
         /// <summary>

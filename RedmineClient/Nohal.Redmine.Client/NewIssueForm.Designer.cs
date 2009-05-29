@@ -41,8 +41,6 @@
             this.ComboBoxStatus = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.ComboBoxPriority = new System.Windows.Forms.ComboBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
             this.DateDue = new System.Windows.Forms.DateTimePicker();
             this.label8 = new System.Windows.Forms.Label();
             this.TextBoxEstimatedTime = new System.Windows.Forms.TextBox();
@@ -55,6 +53,8 @@
             this.ListBoxWatchers = new System.Windows.Forms.ListBox();
             this.label12 = new System.Windows.Forms.Label();
             this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
+            this.cbStartDate = new System.Windows.Forms.CheckBox();
+            this.cbDueDate = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -177,24 +177,6 @@
             this.ComboBoxPriority.Size = new System.Drawing.Size(180, 24);
             this.ComboBoxPriority.TabIndex = 20;
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 200);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(70, 17);
-            this.label6.TabIndex = 22;
-            this.label6.Text = "Start date";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(132, 200);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(66, 17);
-            this.label7.TabIndex = 24;
-            this.label7.Text = "Due date";
-            // 
             // DateDue
             // 
             this.DateDue.Format = System.Windows.Forms.DateTimePickerFormat.Short;
@@ -300,6 +282,28 @@
             this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
             this.backgroundWorker2.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker2_RunWorkerCompleted);
             // 
+            // cbStartDate
+            // 
+            this.cbStartDate.AutoSize = true;
+            this.cbStartDate.Location = new System.Drawing.Point(15, 200);
+            this.cbStartDate.Name = "cbStartDate";
+            this.cbStartDate.Size = new System.Drawing.Size(89, 21);
+            this.cbStartDate.TabIndex = 35;
+            this.cbStartDate.Text = "Start date";
+            this.cbStartDate.UseVisualStyleBackColor = true;
+            this.cbStartDate.CheckedChanged += new System.EventHandler(this.cbStartDate_CheckedChanged);
+            // 
+            // cbDueDate
+            // 
+            this.cbDueDate.AutoSize = true;
+            this.cbDueDate.Location = new System.Drawing.Point(135, 200);
+            this.cbDueDate.Name = "cbDueDate";
+            this.cbDueDate.Size = new System.Drawing.Size(85, 21);
+            this.cbDueDate.TabIndex = 36;
+            this.cbDueDate.Text = "Due date";
+            this.cbDueDate.UseVisualStyleBackColor = true;
+            this.cbDueDate.CheckedChanged += new System.EventHandler(this.cbDueDate_CheckedChanged);
+            // 
             // NewIssueForm
             // 
             this.AcceptButton = this.BtnSaveButton;
@@ -307,6 +311,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.BtnCancelButton;
             this.ClientSize = new System.Drawing.Size(578, 346);
+            this.Controls.Add(this.DateDue);
+            this.Controls.Add(this.DateStart);
+            this.Controls.Add(this.cbDueDate);
+            this.Controls.Add(this.cbStartDate);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.ListBoxWatchers);
             this.Controls.Add(this.label11);
@@ -317,9 +325,6 @@
             this.Controls.Add(this.ComboBoxAssignedTo);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.TextBoxEstimatedTime);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.DateDue);
-            this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.ComboBoxPriority);
             this.Controls.Add(this.label4);
@@ -328,7 +333,6 @@
             this.Controls.Add(this.TextBoxDescription);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.TextBoxSubject);
-            this.Controls.Add(this.DateStart);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.ComboBoxTracker);
             this.Controls.Add(this.BtnSaveButton);
@@ -358,8 +362,6 @@
         private System.Windows.Forms.ComboBox ComboBoxStatus;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox ComboBoxPriority;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.DateTimePicker DateDue;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox TextBoxEstimatedTime;
@@ -372,5 +374,7 @@
         private System.Windows.Forms.ListBox ListBoxWatchers;
         private System.Windows.Forms.Label label12;
         private System.ComponentModel.BackgroundWorker backgroundWorker2;
+        private System.Windows.Forms.CheckBox cbStartDate;
+        private System.Windows.Forms.CheckBox cbDueDate;
     }
 }

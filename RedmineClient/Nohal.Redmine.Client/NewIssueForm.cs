@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Nohal.Redmine.Client
@@ -20,14 +17,22 @@ namespace Nohal.Redmine.Client
         private void BtnSaveButton_Click(object sender, EventArgs e)
         {
             Issue issue = new Issue();
+            issue.ProjectId = this.ProjectId;
             issue.AssignedTo = Convert.ToInt32(ComboBoxAssignedTo.SelectedValue);
             issue.Description = TextBoxDescription.Text;
-            issue.DueDate = DateDue.Value;
+            
             int time;
             issue.EstimatedTime = Int32.TryParse(TextBoxEstimatedTime.Text, out time) ? time : 0;
             issue.PercentDone = Convert.ToInt32(numericUpDown1.Value);
             issue.PriorityId = Convert.ToInt32(ComboBoxPriority.SelectedValue);
-            issue.Start = DateStart.Value;
+            if (DateStart.Enabled)
+            {
+                issue.Start = DateStart.Value;
+            }
+            if (DateDue.Enabled)
+            {
+                issue.DueDate = DateDue.Value;   
+            }
             issue.StatusId = Convert.ToInt32(ComboBoxStatus.SelectedValue);
             issue.Subject = TextBoxSubject.Text;
             issue.TargetVersionId = Convert.ToInt32(ComboBoxTargetVersion.SelectedValue);
@@ -40,9 +45,25 @@ namespace Nohal.Redmine.Client
             {
                 issue.Watchers.Add((User)watcher);   
             }
-            //TODO: save the issue
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            try
+            {
+                if (issue.Subject != String.Empty)
+                {
+                    RedmineClientForm.redmine.CreateIssue(issue);
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("The issue subject is mandatory.",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format("Creating the issue failed, the server responded: {0}", ex.Message),
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void BtnCancelButton_Click(object sender, EventArgs e)
@@ -53,6 +74,10 @@ namespace Nohal.Redmine.Client
 
         private void NewIssueForm_Load(object sender, EventArgs e)
         {
+            cbDueDate.Checked = false;
+            cbStartDate.Checked = false;
+            DateStart.Enabled = false;
+            DateDue.Enabled = false;
             if (RedmineClientForm.DataCache == null)
             {
                 this.Cursor = Cursors.AppStarting;
@@ -103,6 +128,16 @@ namespace Nohal.Redmine.Client
             this.Cursor = Cursors.Default;
             FillForm();
             this.BtnSaveButton.Enabled = true;
+        }
+
+        private void cbStartDate_CheckedChanged(object sender, EventArgs e)
+        {
+            DateStart.Enabled = cbStartDate.Checked;
+        }
+
+        private void cbDueDate_CheckedChanged(object sender, EventArgs e)
+        {
+            DateDue.Enabled = cbDueDate.Checked;
         }
 
 

@@ -482,9 +482,9 @@ namespace Nohal.Redmine.Client
         {
             NewIssueForm dlg = new NewIssueForm();
             dlg.ProjectId = projectId;
-            if (dlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+            if (dlg.ShowDialog(this) == DialogResult.OK)
             {
-                MessageBox.Show("Adding issues to Redmine not yet implemented.");
+                BtnRefreshButton_Click(null, null);
             }
         }
     }
