@@ -29,7 +29,7 @@ namespace Nohal.Redmine.Client
                 System.Version latestVersion = new System.Version(doc.SelectSingleNode("//redmineclient/version").InnerText);
                 string latestVersionUrl = doc.SelectSingleNode("//redmineclient/url").InnerText;
 
-                if (System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.CompareTo(latestVersion) < 0)
+                if (System.Reflection.Assembly.GetExecutingAssembly().GetName().Version < latestVersion)
                 {
                     return latestVersionUrl;
                 }
