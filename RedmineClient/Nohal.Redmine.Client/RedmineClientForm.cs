@@ -50,13 +50,17 @@ namespace Nohal.Redmine.Client
             this.BtnCommitButton.Enabled = false;
             this.BtnRefreshButton.Enabled = false;
             this.BtnNewIssueButton.Enabled = false;
-            string latestVersionUrl = Utility.CheckForUpdate();
-            if (latestVersionUrl != String.Empty)
+            if (this.CheckForUpdates)
             {
-                if (MessageBox.Show("New version available. Do you want me to take you to the download location?",
-                                "New version", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                string latestVersionUrl = Utility.CheckForUpdate();
+                if (latestVersionUrl != String.Empty)
                 {
-                    System.Diagnostics.Process.Start(latestVersionUrl);
+                    if (MessageBox.Show("New version available. Do you want me to take you to the download location?",
+                                        "New version", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
+                        System.Windows.Forms.DialogResult.Yes)
+                    {
+                        System.Diagnostics.Process.Start(latestVersionUrl);
+                    }
                 }
             }
             backgroundWorker1.RunWorkerAsync(0);
@@ -128,7 +132,14 @@ namespace Nohal.Redmine.Client
 
             if (ComboBoxProject.Items.Count > 0)
             {
-                ComboBoxProject.SelectedIndex = 0;
+                if (projectId != 0)
+                {
+                    ComboBoxProject.SelectedValue = projectId;
+                }
+                else
+                {
+                    ComboBoxProject.SelectedIndex = 0;   
+                }
                 if (!Int32.TryParse(ComboBoxProject.SelectedValue.ToString(), out projectId))
                 {
                     projectId = 0;
@@ -137,6 +148,10 @@ namespace Nohal.Redmine.Client
             if (ComboBoxActivity.Items.Count > 0)
             {
                 ComboBoxActivity.SelectedIndex = 0;
+                if (!Int32.TryParse(ComboBoxActivity.SelectedValue.ToString(), out activityId))
+                {
+                    activityId = 0;
+                } 
             }
             if (DataGridViewIssues.Rows.Count > 0)
             {
