@@ -231,7 +231,7 @@ namespace Nohal.Redmine
                 this.cookieJar = new CookieContainer();
             }
 
-            request.Proxy = new WebProxy("http://localhost:8888");
+            //request.Proxy = new WebProxy("http://localhost:8888");
             request.CookieContainer = this.cookieJar;
 
             request.UserAgent = "Nohal.Redmine";
