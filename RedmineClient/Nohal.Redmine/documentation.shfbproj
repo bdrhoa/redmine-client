@@ -30,7 +30,7 @@
     </WorkingPath>
     <BuildLogFile>
     </BuildLogFile>
-    <HelpFileFormat>Help1xAnd2xAndWebsite</HelpFileFormat>
+    <HelpFileFormat>Help1xAndWebsite</HelpFileFormat>
     <FrameworkVersion>2.0.50727</FrameworkVersion>
     <HelpTitle>Redmine Client Library</HelpTitle>
     <CopyrightHref>http://redmineclient.sourceforge.net</CopyrightHref>
@@ -40,7 +40,8 @@
     <PresentationStyle>Prototype</PresentationStyle>
     <DocumentationSources>
       <DocumentationSource sourceFile="bin\Debug\Nohal.Redmine.dll" />
-<DocumentationSource sourceFile="bin\Debug\Nohal.Redmine.xml" /></DocumentationSources>
+      <DocumentationSource sourceFile="bin\Debug\Nohal.Redmine.xml" />
+    </DocumentationSources>
     <Preliminary>True</Preliminary>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
