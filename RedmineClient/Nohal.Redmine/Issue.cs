@@ -12,9 +12,27 @@ using System.Collections.Specialized;
 namespace Nohal.Redmine
 {
     /// <summary>
+    /// Public interface for the issue list
+    /// </summary>
+    public interface IIssue
+    {
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        /// <value>The id of the issue.</value>
+        int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the subject.
+        /// </summary>
+        /// <value>The subject of the issue.</value>
+        string Subject { get; set; }
+    }
+
+    /// <summary>
     /// Class representing the issue in Redmine
     /// </summary>
-    public class Issue
+    public class Issue : IIssue
     {
         /// <summary>
         /// Gets or sets the list of related issues

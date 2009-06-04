@@ -108,7 +108,7 @@ namespace Nohal.Redmine.Client
             ComboBoxActivity.DisplayMember = "Description";
             ComboBoxActivity.ValueMember = "Id";
 
-            DataGridViewIssues.DataSource = data.Issues;
+            DataGridViewIssues.DataSource = data.Issues.ConvertAll(new Converter<Issue, IIssue>(IssueToIIssue));
             foreach (DataGridViewColumn column in DataGridViewIssues.Columns)
             {
                 if (column.Name != "Id" && column.Name != "Subject")
@@ -145,6 +145,11 @@ namespace Nohal.Redmine.Client
             }
             updating = false;
             this.Cursor = Cursors.Default;
+        }
+
+        private static IIssue IssueToIIssue(Issue issue)
+        {
+            return (IIssue)issue;
         }
 
         private void LoadConfig()
