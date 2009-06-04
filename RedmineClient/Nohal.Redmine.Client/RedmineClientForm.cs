@@ -52,16 +52,7 @@ namespace Nohal.Redmine.Client
             this.BtnNewIssueButton.Enabled = false;
             if (this.CheckForUpdates)
             {
-                string latestVersionUrl = Utility.CheckForUpdate();
-                if (latestVersionUrl != String.Empty)
-                {
-                    if (MessageBox.Show("New version available. Do you want me to take you to the download location?",
-                                        "New version", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
-                        System.Windows.Forms.DialogResult.Yes)
-                    {
-                        System.Diagnostics.Process.Start(latestVersionUrl);
-                    }
-                }
+                backgroundWorker2.RunWorkerAsync();
             }
             backgroundWorker1.RunWorkerAsync(0);
         }
@@ -505,6 +496,20 @@ namespace Nohal.Redmine.Client
             if (dlg.ShowDialog(this) == DialogResult.OK)
             {
                 BtnRefreshButton_Click(null, null);
+            }
+        }
+
+        private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
+        {
+            string latestVersionUrl = Utility.CheckForUpdate();
+            if (latestVersionUrl != String.Empty)
+            {
+                if (MessageBox.Show("New version available. Do you want me to take you to the download location?",
+                                    "New version", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
+                    System.Windows.Forms.DialogResult.Yes)
+                {
+                    System.Diagnostics.Process.Start(latestVersionUrl);
+                }
             }
         }
     }
