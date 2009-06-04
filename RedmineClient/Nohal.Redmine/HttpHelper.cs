@@ -231,7 +231,7 @@ namespace Nohal.Redmine
                 this.cookieJar = new CookieContainer();
             }
 
-            //// DEBUG: request.Proxy = new WebProxy("http://localhost:8888");
+            request.Proxy = new WebProxy("http://localhost:8888");
             request.CookieContainer = this.cookieJar;
 
             request.UserAgent = "Nohal.Redmine";
@@ -253,7 +253,7 @@ namespace Nohal.Redmine
             else
             {
                 request.Method = "POST";
-                request.ContentType = "multipart/form-data; Boundary=" + MultipartData.Boundary;
+                request.ContentType = "multipart/form-data; boundary=" + MultipartData.Boundary;
             }
 
             if (request.Method == "POST")
