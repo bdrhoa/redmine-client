@@ -51,6 +51,11 @@ namespace Nohal.Redmine
         /// Relative path to the new issue form
         /// </summary>
         private const string NewIssueRelativeUri = "projects/{0}/issues/new";
+
+        /// <summary>
+        /// Relative path to delete the issue
+        /// </summary>
+        private const string DestroyIssueRelativeUri = "/issues/destroy/{0}";
         
         /// <summary>
         /// Relative path to the time logging form
@@ -438,6 +443,15 @@ namespace Nohal.Redmine
         {
             this.httpHelper.PostMultipartFormDataWebRequest(
                 this.ConstructUri(String.Format(NewIssueRelativeUri, newIssue.ProjectId)), newIssue.MakeRequestData());
+        }
+
+        /// <summary>
+        /// Deletes an issue from Redmine
+        /// </summary>
+        /// <param name="issueId">Id of the issue to delete</param>
+        public void DeleteIssue(int issueId)
+        {
+            this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(DestroyIssueRelativeUri, issueId)));
         }
 
         /// <summary>
