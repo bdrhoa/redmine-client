@@ -37,7 +37,12 @@ namespace Nohal.Redmine
         /// <param name="pageContent">Text of the page</param>
         internal XhtmlPage(string pageContent) : this()
         {
-            this.xml.LoadXml(pageContent);
+            //this is an ugly hack for W3C not allowing the XmlResolver to download the DTDs
+            string pageText = pageContent.Replace("&nbsp;", " ").Replace("&copy;", "(c)");
+            this.xml.XmlResolver = null; 
+
+            this.xml.LoadXml(pageText);
+            this.xml.XmlResolver = new XmlUrlResolver();
         }
 
         /// <summary>
@@ -98,7 +103,19 @@ namespace Nohal.Redmine
         /// <returns>collection of key->value pairs</returns>
         internal Dictionary<int, string> GetSelectOptions(string selectId)
         {
-            return this.ParseSelect(this.GetElementById(selectId));
+            XmlNode selectNode = this.GetElementById(selectId);
+            if (selectNode == null)
+            {
+                XmlNodeList nodes = this.GetElementsByName("select");
+                foreach (XmlNode node in nodes)
+                {
+                    if (node.Attributes["id"] != null && node.Attributes["id"].Value == selectId)
+                    {
+                        selectNode = node;
+                    }
+                }
+            }
+            return this.ParseSelect(selectNode);
         }
 
         /// <summary>
