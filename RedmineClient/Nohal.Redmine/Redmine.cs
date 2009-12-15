@@ -477,7 +477,7 @@ namespace Nohal.Redmine
         public void CreateIssue(Issue newIssue)
         {
             this.httpHelper.PostMultipartFormDataWebRequest(
-                this.ConstructUri(String.Format(NewIssueRelativeUri, newIssue.ProjectId)), newIssue.MakeRequestData(AuthenticityToken));
+                this.ConstructUri(String.Format(NewIssueRelativeUri, newIssue.ProjectId)), newIssue.MakeRequestData());
         }
 
         /// <summary>
