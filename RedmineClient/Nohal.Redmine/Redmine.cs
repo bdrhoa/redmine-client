@@ -66,7 +66,7 @@ namespace Nohal.Redmine
         /// Form request for login
         /// </summary>
         private const string LoginRequest =
-            "back_url={0}&username={1}&password={2}&login=Login";
+            "back_url={0}&username={1}&password={2}&authenticity_token={3}&login=Login";
 
         /// <summary>
         /// Form request for time log
@@ -162,11 +162,22 @@ namespace Nohal.Redmine
         {
             if (!string.IsNullOrEmpty(this.RedmineUser))
             {
+                XhtmlPage page1 = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(LoginRelativeUri)));
+                XmlNodeList nodes = page1.XmlDocument.GetElementsByTagName("input");
+                string auth_token = String.Empty;
+                foreach (XmlNode node in nodes)
+                {
+                    if (node.Attributes["name"].Value == "authenticity_token")
+                    {
+                        auth_token = node.Attributes["value"].Value;
+                    }
+                }
                 string requestData = String.Format(LoginRequest,
                                                    System.Web.HttpUtility.UrlEncode(
                                                        this.ConstructUri(ProjectListRelativeUri).ToString()),
                                                    System.Web.HttpUtility.UrlEncode(this.RedmineUser),
-                                                   System.Web.HttpUtility.UrlEncode(this.RedminePassword));
+                                                   System.Web.HttpUtility.UrlEncode(this.RedminePassword),
+                                                   System.Web.HttpUtility.UrlEncode(auth_token));
                 XhtmlPage page = new XhtmlPage(this.httpHelper.PostUrlEncodedWebRequest(this.ConstructUri(LoginRelativeUri), requestData));
 
                 // if we get a feed with projects, we assume that we are successfully authenticated
