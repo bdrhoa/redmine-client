@@ -127,6 +127,7 @@ namespace Nohal.Redmine
         internal byte[] MakeRequestData()
         {
             MultipartData data = new MultipartData();
+            data.AddValue("authenticity_token", Redmine.AuthenticityToken);
             data.AddValue("issue[tracker_id]", this.TrackerId.ToString());
             data.AddValue("issue[subject]", this.Subject);
             data.AddValue("issue[description]", this.Description);
