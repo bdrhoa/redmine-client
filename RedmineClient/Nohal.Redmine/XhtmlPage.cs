@@ -28,6 +28,7 @@ namespace Nohal.Redmine
         internal XhtmlPage()
         {
             this.xml = new XmlDocument();
+            this.xml.XmlResolver = XhtmlResolverFactory.Create();
         }
 
         /// <summary>
@@ -37,13 +38,7 @@ namespace Nohal.Redmine
         /// <param name="pageContent">Text of the page</param>
         internal XhtmlPage(string pageContent) : this()
         {
-            //this is an ugly hack for W3C not allowing the XmlResolver to download the DTDs
-            //string pageText = pageContent.Replace("&nbsp;", " ").Replace("&copy;", "(c)");
-            //this.xml.XmlResolver = null; 
-            this.xml.XmlResolver = XhtmlResolverFactory.Create();
-
             this.xml.LoadXml(pageContent);
-            this.xml.XmlResolver = new XmlUrlResolver();
         }
 
         /// <summary>
