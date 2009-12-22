@@ -1,62 +1,141 @@
-﻿// <copyright file="XhtmlPage.cs" company="Pavel Kalian">
+﻿// <copyright file="CachedXmlResolver.cs" company="Pavel Kalian">
 // Copyright (c) 2009 All Right Reserved
 // </copyright>
 // <author>Pavel Kalian</author>
 // <email>pavel@kalian.cz</email>
-// <date>2009-04-29</date>
-// <summary>Class representing the XHTML page.
-// Taken from http://www.codewrecks.com/blog/index.php/2008/05/20/xmldocument-xmlresolver-and-cache-the-schema-of-xhtml/ </summary>
+// <date>2009-12-22</date>
+// <summary>XmlResolver which uses DTDs from the resources instead of the W3C ones.
+// Taken from http://sticklebackplastic.com/post/2007/07/03/XmlResolver-reading-from-resources.aspx </summary>
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Xml;
 
 namespace Nohal.Redmine
 {
-    public class CachedXmlResolver : XmlUrlResolver
+
+    internal sealed class XmlResourceResolver : XmlUrlResolver
     {
-        public override Uri ResolveUri(Uri baseUri, string relativeUri)
-        {
-            if (relativeUri == "-//W3C//DTD XHTML 1.0 Strict//EN")
-                return new Uri("http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
-            else if (relativeUri == "-//W3C XHTML 1.0 Transitional//EN")
-                return new Uri("http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd");
-            else if (relativeUri == "-//W3C//DTD XHTML 1.0 Transitional//EN")
-                return new Uri("http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd");
-            else if (relativeUri == "-//W3C XHTML 1.0 Frameset//EN")
-                return new Uri("http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd");
-            else if (relativeUri == "-//W3C//DTD XHTML 1.1//EN")
-                return new Uri("http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
-            return base.ResolveUri(baseUri, relativeUri);
-        }
 
-        public override object GetEntity(Uri absoluteUri, string role, Type ofObjectToReturn)
-        {
-            if (!cache.ContainsKey(absoluteUri))
-                GetNewStream(absoluteUri, role, ofObjectToReturn);
-            return new FileStream(cache[absoluteUri], FileMode.Open, FileAccess.Read, FileShare.Read);
-        }
+        private readonly Dictionary<string, Resource> _publicIdResources = new Dictionary<string, Resource>();
+        private readonly Dictionary<string, Assembly> _assemblyMapping = new Dictionary<string, Assembly>();
 
-        private void GetNewStream(Uri absoluteUri, string role, Type ofObjectToReturn)
+        private class Resource
         {
-            using (Stream stream = (Stream)base.GetEntity(absoluteUri, role, ofObjectToReturn))
+            private readonly Assembly ResourceAssembly;
+            private readonly string _resourceNameAsPath;
+
+            public Resource(Assembly resourceAssembly, string resourceNameAsPath)
             {
-                String filename = System.IO.Path.GetTempFileName();
-                using (FileStream ms = new FileStream(filename, FileMode.Create, FileAccess.Write))
+                ResourceAssembly = resourceAssembly;
+                _resourceNameAsPath = resourceNameAsPath;
+            }
+
+            public Uri AbsoluteUri
+            {
+                get
                 {
-                    Byte[] buffer = new byte[8192];
-                    Int32 count = 0;
-                    while ((count = stream.Read(buffer, 0, buffer.Length)) > 0)
-                    {
-                        ms.Write(buffer, 0, count);
-                    }
-                    ms.Flush();
-                    cache.Add(absoluteUri, filename);
+                    UriBuilder builder = new UriBuilder();
+                    builder.Scheme = ResourceScheme;
+                    builder.Host = ResourceAssembly.GetName().Name.ToLower();
+                    builder.Path = _resourceNameAsPath;
+
+                    return builder.Uri;
                 }
             }
         }
 
-        public static Dictionary<Uri, String> cache = new Dictionary<Uri, String>();
+        internal void AddPublicIdMapping(string publicId, Assembly resourceAssembly, string resourceNamespace, string resourceName)
+        {
 
+            // Treat the resource namespace as a path - replace the "." separators with "/", and append the resource name
+            string resourceNameAsPath = resourceNamespace.Replace(".", "/") + "/" + resourceName;
+
+            Resource resource = new Resource(resourceAssembly, resourceNameAsPath);
+            _publicIdResources.Add(publicId, resource);
+            string assemblyName = resourceAssembly.GetName().Name.ToLower();
+            if (!_assemblyMapping.ContainsKey(assemblyName))
+            {
+                _assemblyMapping.Add(assemblyName, resourceAssembly);
+            }
+        }
+
+        public override object GetEntity(Uri absoluteUri, string role, Type ofObjectToReturn)
+        {
+
+            if (absoluteUri.Scheme == ResourceScheme)
+            {
+                Assembly resourceAssembly = _assemblyMapping[absoluteUri.Host];
+                string resourceName = absoluteUri.AbsolutePath.Substring(1).Replace("/", ".");
+                Stream stream = resourceAssembly.GetManifestResourceStream(resourceName);
+                return stream;
+            }
+
+            return base.GetEntity(absoluteUri, role, ofObjectToReturn);
+        }
+
+        public override Uri ResolveUri(Uri baseUri, string relativeUri)
+        {
+
+            // Is this a DocType Public Id?
+            if (baseUri == null)
+            {
+                Resource resource;
+                if (_publicIdResources.TryGetValue(relativeUri, out resource))
+                {
+                    return resource.AbsoluteUri;
+                }
+            }
+
+            return base.ResolveUri(baseUri, relativeUri);
+        }
+
+        private const string ResourceScheme = "resource";
     }
+
+    internal static class XhtmlParserContextFactory
+    {
+
+        internal static XmlParserContext CreateStrict()
+        {
+            XmlNameTable nameTable = new NameTable();
+            XmlNamespaceManager namespaceManager = new XmlNamespaceManager(nameTable);
+            XmlParserContext context = new XmlParserContext(nameTable, namespaceManager, null, XmlSpace.None);
+
+            context.DocTypeName = "html";
+            context.PublicId = "-//W3C//DTD XHTML 1.0 Strict//EN";
+            context.SystemId = "xhtml1-strict.dtd";
+            return context;
+        }
+    }
+
+    internal static class XhtmlResolverFactory
+    {
+
+        internal static XmlResolver Create()
+        {
+            XmlResourceResolver resolver = new XmlResourceResolver();
+
+            Assembly assembly = typeof(XhtmlResolverFactory).Assembly;
+            string resourceNamespace = typeof(XhtmlResolverFactory).Namespace;
+
+            resolver.AddPublicIdMapping("-//W3C//DTD XHTML 1.0 Strict//EN", assembly, resourceNamespace, XhtmlStrictDtd);
+            resolver.AddPublicIdMapping("-//W3C//DTD XHTML 1.0 Transitional//EN", assembly, resourceNamespace, XhtmlTransitionalDtd);
+            resolver.AddPublicIdMapping("-//W3C//DTD XHTML 1.0 Frameset//EN", assembly, resourceNamespace, XhtmlFramesetDtd);
+            resolver.AddPublicIdMapping("xhtml-lat1.ent", assembly, resourceNamespace, XhtmlLat1Ent);
+            resolver.AddPublicIdMapping("xhtml-symbol.ent", assembly, resourceNamespace, XhtmlSymbolEnt);
+            resolver.AddPublicIdMapping("xhtml-special.ent", assembly, resourceNamespace, XhtmlSpecialEnt);
+
+            return resolver;
+        }
+
+        private const string XhtmlStrictDtd = "xhtml1-strict.dtd";
+        private const string XhtmlTransitionalDtd = "xhtml1-transitional.dtd";
+        private const string XhtmlFramesetDtd = "xhtml1-frameset.dtd";
+        private const string XhtmlLat1Ent = "xhtml-lat1.ent";
+        private const string XhtmlSymbolEnt = "xhtml-symbol.ent";
+        private const string XhtmlSpecialEnt = "xhtml-special.ent";
+    }
+
 }

@@ -62,6 +62,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <EmbeddedResource Include="xhtml-special.ent" />
+    <EmbeddedResource Include="xhtml-symbol.ent" />
+    <EmbeddedResource Include="xhtml-lat1.ent" />
+    <EmbeddedResource Include="xhtml1-frameset.dtd" />
+    <EmbeddedResource Include="xhtml1-strict.dtd" />
+    <EmbeddedResource Include="xhtml1-transitional.dtd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -38,10 +38,11 @@ namespace Nohal.Redmine
         internal XhtmlPage(string pageContent) : this()
         {
             //this is an ugly hack for W3C not allowing the XmlResolver to download the DTDs
-            string pageText = pageContent.Replace("&nbsp;", " ").Replace("&copy;", "(c)");
-            this.xml.XmlResolver = null; 
+            //string pageText = pageContent.Replace("&nbsp;", " ").Replace("&copy;", "(c)");
+            //this.xml.XmlResolver = null; 
+            this.xml.XmlResolver = XhtmlResolverFactory.Create();
 
-            this.xml.LoadXml(pageText);
+            this.xml.LoadXml(pageContent);
             this.xml.XmlResolver = new XmlUrlResolver();
         }
 
@@ -104,17 +105,6 @@ namespace Nohal.Redmine
         internal Dictionary<int, string> GetSelectOptions(string selectId)
         {
             XmlNode selectNode = this.GetElementById(selectId);
-            if (selectNode == null)
-            {
-                XmlNodeList nodes = this.GetElementsByName("select");
-                foreach (XmlNode node in nodes)
-                {
-                    if (node.Attributes["id"] != null && node.Attributes["id"].Value == selectId)
-                    {
-                        selectNode = node;
-                    }
-                }
-            }
             return this.ParseSelect(selectNode);
         }
 
