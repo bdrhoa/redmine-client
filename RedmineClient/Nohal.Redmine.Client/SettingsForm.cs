@@ -43,6 +43,7 @@ namespace Nohal.Redmine.Client
             config.AppSettings.Settings.Add("RedminePassword", RedminePasswordTextBox.Text);
             config.AppSettings.Settings.Add("RedmineAuthentication", AuthenticationCheckBox.Checked.ToString());
             config.AppSettings.Settings.Add("CheckForUpdates", CheckForUpdatesCheckBox.Checked.ToString());
+            config.AppSettings.Settings.Add("CacheLifetime", CacheLifetime.Value.ToString());
             config.Save(ConfigurationSaveMode.Modified);
             ConfigurationManager.RefreshSection("appSettings");
         }
@@ -54,6 +55,7 @@ namespace Nohal.Redmine.Client
             RedminePasswordTextBox.Text = ConfigurationManager.AppSettings["RedminePassword"];
             AuthenticationCheckBox.Checked = Convert.ToBoolean(ConfigurationManager.AppSettings["RedmineAuthentication"]);
             CheckForUpdatesCheckBox.Checked = Convert.ToBoolean(ConfigurationManager.AppSettings["CheckForUpdates"]);
+            CacheLifetime.Value = Convert.ToInt32(ConfigurationManager.AppSettings["CacheLifetime"]);
         }
 
         private void AuthenticationCheckBox_CheckedChanged(object sender, EventArgs e)

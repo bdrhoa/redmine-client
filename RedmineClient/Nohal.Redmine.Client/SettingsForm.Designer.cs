@@ -38,6 +38,9 @@
             this.RedminePasswordTextBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.CheckForUpdatesCheckBox = new System.Windows.Forms.CheckBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.CacheLifetime = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.CacheLifetime)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -124,12 +127,38 @@
             // CheckForUpdatesCheckBox
             // 
             this.CheckForUpdatesCheckBox.AutoSize = true;
-            this.CheckForUpdatesCheckBox.Location = new System.Drawing.Point(15, 129);
+            this.CheckForUpdatesCheckBox.Location = new System.Drawing.Point(15, 174);
             this.CheckForUpdatesCheckBox.Name = "CheckForUpdatesCheckBox";
             this.CheckForUpdatesCheckBox.Size = new System.Drawing.Size(210, 21);
             this.CheckForUpdatesCheckBox.TabIndex = 9;
             this.CheckForUpdatesCheckBox.Text = "Check for updates on startup";
             this.CheckForUpdatesCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 126);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(232, 17);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "Cache lifetime (minutes, 0 = infinite)";
+            // 
+            // CacheLifetime
+            // 
+            this.CacheLifetime.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.CacheLifetime.Location = new System.Drawing.Point(15, 146);
+            this.CacheLifetime.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.CacheLifetime.Name = "CacheLifetime";
+            this.CacheLifetime.Size = new System.Drawing.Size(93, 22);
+            this.CacheLifetime.TabIndex = 12;
             // 
             // SettingsForm
             // 
@@ -138,6 +167,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.BtnCancelButton;
             this.ClientSize = new System.Drawing.Size(580, 348);
+            this.Controls.Add(this.CacheLifetime);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.CheckForUpdatesCheckBox);
             this.Controls.Add(this.RedminePasswordTextBox);
             this.Controls.Add(this.label3);
@@ -151,6 +182,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "SettingsForm";
             this.Text = "Settings";
+            ((System.ComponentModel.ISupportInitialize)(this.CacheLifetime)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -168,5 +200,7 @@
         private System.Windows.Forms.TextBox RedminePasswordTextBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox CheckForUpdatesCheckBox;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.NumericUpDown CacheLifetime;
     }
 }

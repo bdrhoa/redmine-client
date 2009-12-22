@@ -11,10 +11,13 @@ using System.Text;
 
 namespace Nohal.Redmine
 {
+    /// <summary>
+    /// Class that provides caching for the values retrieved from Redmine server
+    /// </summary>
     internal class Cache
     {
         private DateTime _projectsRead;
-        public TimeSpan InvalidationLifetime = new TimeSpan(0, 0, 20, 0);
+        public TimeSpan InvalidationLifetime = TimeSpan.Zero;
 
         private List<Project> _projects;
         private Dictionary<int, List<Activity>> _activities = new Dictionary<int, List<Activity>>();
@@ -26,7 +29,7 @@ namespace Nohal.Redmine
         {
             get
             {
-                if (DateTime.Now.Subtract(_projectsRead) > InvalidationLifetime)
+                if (InvalidationLifetime == TimeSpan.Zero || DateTime.Now.Subtract(_projectsRead) > InvalidationLifetime)
                 {
                     _projects = null;
                 }
@@ -43,7 +46,7 @@ namespace Nohal.Redmine
         {
             DateTime read;
             _activitiesRead.TryGetValue(projectId, out read);
-            if (read == DateTime.MinValue || DateTime.Now.Subtract(read) > InvalidationLifetime)
+            if (read == DateTime.MinValue || InvalidationLifetime == TimeSpan.Zero || DateTime.Now.Subtract(read) > InvalidationLifetime)
             {
                 return null;
             }
@@ -63,7 +66,7 @@ namespace Nohal.Redmine
         {
             DateTime read;
             _issuesRead.TryGetValue(projectId, out read);
-            if (read == DateTime.MinValue || DateTime.Now.Subtract(read) > InvalidationLifetime)
+            if (read == DateTime.MinValue || InvalidationLifetime == TimeSpan.Zero || DateTime.Now.Subtract(read) > InvalidationLifetime)
             {
                 return null;
             }
@@ -89,7 +92,10 @@ namespace Nohal.Redmine
         }
     }
 
-    public class CachedObject
+    /// <summary>
+    /// Abstract parent for the cached objects
+    /// </summary>
+    public abstract class CachedObject
     {
         internal DateTime Created;
         internal TimeSpan Age

@@ -24,6 +24,7 @@ namespace Nohal.Redmine.Client
         private string RedminePassword;
 
         private bool CheckForUpdates;
+        private int CacheLifetime;
 
         public RedmineClientForm()
         {
@@ -41,6 +42,7 @@ namespace Nohal.Redmine.Client
             redmine = new Redmine();
             LoadConfig();
             redmine.RedmineBaseUri = RedmineURL;
+            redmine.CacheLifetime = new TimeSpan(0, 0, CacheLifetime, 0);
             if (RedmineAuthentication)
             {
                 redmine.RedmineUser = RedmineUser;
@@ -165,6 +167,7 @@ namespace Nohal.Redmine.Client
             RedmineUser = ConfigurationManager.AppSettings["RedmineUser"];
             RedminePassword = ConfigurationManager.AppSettings["RedminePassword"];
             CheckForUpdates = Convert.ToBoolean(ConfigurationManager.AppSettings["CheckForUpdates"]);
+            CacheLifetime = Convert.ToInt32(ConfigurationManager.AppSettings["CacheLifetime"]);
         }
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -442,6 +445,7 @@ namespace Nohal.Redmine.Client
                 this.Cursor = Cursors.AppStarting;
                 LoadConfig();
                 redmine.RedmineBaseUri = RedmineURL;
+                redmine.CacheLifetime = new TimeSpan(0, 0, CacheLifetime, 0);
                 if (RedmineAuthentication)
                 {
                     redmine.RedmineUser = RedmineUser;
