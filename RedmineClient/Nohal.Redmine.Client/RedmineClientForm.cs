@@ -405,6 +405,7 @@ namespace Nohal.Redmine.Client
 
         private void BtnRefreshButton_Click(object sender, EventArgs e)
         {
+            redmine.InvalidateCache();
             this.Cursor = Cursors.AppStarting;
             int selectedProject = 0;
             if (ComboBoxProject.SelectedValue != null)
@@ -436,6 +437,8 @@ namespace Nohal.Redmine.Client
             SettingsForm dlg = new SettingsForm();
             if (dlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
+                redmine.InvalidateCache();
+                redmine.LogOut();
                 this.Cursor = Cursors.AppStarting;
                 LoadConfig();
                 redmine.RedmineBaseUri = RedmineURL;

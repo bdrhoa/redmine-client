@@ -7,9 +7,6 @@
 // <summary>Contains a wrapper for the Redmine project management system.</summary>
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Net;
 using System.Security.Authentication;
 using System.Text;
 using System.Web;
@@ -22,6 +19,8 @@ namespace Nohal.Redmine
     /// </summary>
     public class Redmine
     {
+        private Cache _cache = new Cache();
+
         /// <summary>
         /// Relative path to the project list
         /// </summary>
@@ -177,11 +176,21 @@ namespace Nohal.Redmine
         }
 
         /// <summary>
+        /// Logs out the user.
+        /// </summary>
+        public void LogOut()
+        {
+            //TODO: clean the authenticity token, etc...
+            this.authenticated = false;
+            InvalidateCache();
+        } 
+
+        /// <summary>
         /// Logs user into Redmine
         /// </summary>
         public void LogIn()
         {
-            if (!string.IsNullOrEmpty(this.RedmineUser))
+            if (!this.authenticated && !string.IsNullOrEmpty(this.RedmineUser))
             {
                 //Get authenticity token from the server
                 XhtmlPage page1 = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(LoginRelativeUri)));
@@ -235,6 +244,11 @@ namespace Nohal.Redmine
         /// <returns>List of all the projects available to the user</returns>
         public List<Project> GetProjects()
         {
+            if (_cache.Projects != null)
+            {
+                return _cache.Projects;
+            }
+
             XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(ProjectListRelativeUri)));
             List<Project> projects = new List<Project>();
             foreach (AtomEntry entry in AtomParser.ParseFeed(page.XmlDocument))
@@ -246,6 +260,7 @@ namespace Nohal.Redmine
                                  });
             }
 
+            _cache.Projects = projects;
             return projects;
         }
 
@@ -256,6 +271,10 @@ namespace Nohal.Redmine
         /// <returns>List of all the available issues for the project</returns>
         public List<Issue> GetIssues(int projectId)
         {
+            if (_cache.GetIssues(projectId) != null)
+            {
+                return _cache.GetIssues(projectId);
+            }
             XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(IssueListRelativeUri, projectId))));
             List<Issue> issues = new List<Issue>();
             foreach (AtomEntry entry in AtomParser.ParseFeed(page.XmlDocument))
@@ -267,6 +286,7 @@ namespace Nohal.Redmine
                 });
             }
 
+            _cache.SetIssues(projectId, issues);
             return issues;
         }
 
@@ -277,6 +297,10 @@ namespace Nohal.Redmine
         /// <returns>List of all the activities available for the user</returns>
         public List<Activity> GetActivities(int projectId)
         {
+            if (_cache.GetActivities(projectId) != null)
+            {
+                return _cache.GetActivities(projectId);
+            }
             XhtmlPage page = new XhtmlPage(this.httpHelper.GetWebRequest(this.ConstructUri(String.Format(TimeLogFormRelativeUri, projectId))));
 
             List<Activity> activities = new List<Activity>();
@@ -285,6 +309,7 @@ namespace Nohal.Redmine
                 activities.Add(new Activity() { Id = kv.Key, Description = kv.Value });
             }
 
+            _cache.SetActivities(projectId, activities);
             return activities;
         }
 
@@ -500,6 +525,24 @@ namespace Nohal.Redmine
             relativepath = VirtualPathUtility.AppendTrailingSlash(this.redmineBaseUri.AbsolutePath);
             UriBuilder ub = new UriBuilder(this.redmineBaseUri.Scheme, this.redmineBaseUri.Host, this.redmineBaseUri.Port, relativepath);
             return new Uri(ub.Uri + redmineRelativeUri);
+        }
+
+        /// <summary>
+        /// Invalidates the cache.
+        /// </summary>
+        public void InvalidateCache()
+        {
+            _cache.InvalidateCache();
+        }
+
+        /// <summary>
+        /// Gets or sets the cache lifetime.
+        /// </summary>
+        /// <value>The cache lifetime.</value>
+        public TimeSpan CacheLifetime
+        {
+            get { return _cache.InvalidationLifetime; }
+            set { _cache.InvalidationLifetime = value; }
         }
     }
 }

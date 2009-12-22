@@ -10,7 +10,7 @@ namespace Nohal.Redmine
     /// <summary>
     /// Class representing the project in Redmine
     /// </summary>
-    public class Project
+    public class Project : CachedObject
     {
         /// <summary>
         /// Gets or sets the Id of the project
